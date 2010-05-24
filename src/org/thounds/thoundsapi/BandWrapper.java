@@ -1,42 +1,90 @@
 package org.thounds.thoundsapi;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * 
+ *
+ */
 public class BandWrapper{
 	private JSONObject band;
 	private JSONArray friendList;
+	private static String[] fieldList={"friends-collection","page", "pages", "total"};
 
+	/**
+	 * 
+	 * @param band
+	 * @throws IllegalThoundsObjectException
+	 */
 	public BandWrapper(JSONObject band) throws IllegalThoundsObjectException{
 		this.band = band;
-		try {
-			friendList = band.getJSONObject("friends-collection").getJSONArray("friends");
-		} catch (JSONException e) {
+		for (int i = 0; i < fieldList.length; i++)
+			if (!band.has(fieldList[i]))
+				throw new IllegalThoundsObjectException();
+		try{
+		friendList = band.optJSONObject("friends-collection").optJSONArray("friends");
+		}catch(Exception e){
 			throw new IllegalThoundsObjectException();
 		}
 	}
 	
-	public int getCurrentPage()throws JSONException{
-		return band.getInt("page");
+	/**
+	 * 
+	 * @return
+	 */
+	public int getCurrentPage(){
+		return band.optInt("page");
 	}
 	
-	public int getPageTotalNumber()throws JSONException{
-		return band.getInt("pages");
+	/**
+	 * 
+	 * @return
+	 */
+	public int getPageTotalNumber(){
+			return band.optInt("pages");
 	}
 	
-	public int getFriendTotalNumber()throws JSONException{
-		return band.getInt("total");
+	/**
+	 * 
+	 * @return
+	 */
+	public int getFriendTotalNumber(){
+		return band.optInt("total");
 	}
 	
-	public int getFriendListLength()throws JSONException{
+	/**
+	 * 
+	 * @return
+	 */
+	public int getFriendListLength(){
 		return friendList.length();
 	}
 	
-	public UserWrapper getFriend(int index)throws JSONException{
-		JSONObject friend = friendList.getJSONObject(index);
-		if(friend != null)
+	/**
+	 * 
+	 * @param index
+	 * @return
+	 * @throws IllegalThoundsObjectException
+	 */
+	public UserWrapper getFriend(int index) throws IllegalThoundsObjectException{
+		JSONObject friend;
+		friend = friendList.optJSONObject(index);
+
+		if (friend != null)
 			return new UserWrapper(friend);
 		return null;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 * @throws IllegalThoundsObjectException
+	 */
+	public UserWrapper[] getThoundsList() throws IllegalThoundsObjectException {
+		UserWrapper[] userList = new UserWrapper[getFriendListLength()];
+		for (int i = 0; i < getFriendListLength(); i++)
+			userList[i] = getFriend(i);
+		return userList;
 	}
 }

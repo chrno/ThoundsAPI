@@ -1,122 +1,134 @@
 package org.thounds.thoundsapi;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-public class UserWrapper{
+/**
+ * 
+ *
+ */
+public class UserWrapper {
 
 	private JSONObject profile;
-	private JSONArray thoundsList;
+	static private String[] fieldList = { "id", "name", "site_url", "email",
+			"city", "country", "about", "avatar", "tags", "default_thound", "created_at" };
 
-	public UserWrapper(JSONObject profile) {
+	/**
+	 * 
+	 * @param profile
+	 * @throws IllegalThoundsObjectException
+	 */
+	public UserWrapper(JSONObject profile) throws IllegalThoundsObjectException {
 		this.profile = profile;
+		for (int i = 0; i < fieldList.length; i++)
+			if (!profile.has(fieldList[i]))
+				throw new IllegalThoundsObjectException();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
+	public int getId() {
+		return profile.optInt("id");
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
 	public String getName() {
-		try {
-			return profile.getString("name");
-		} catch (JSONException e) {
-			return null;
-		}
+		return profile.optString("name");
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public String getSiteUrl() {
-		try {
-			return profile.getString("site_url");
-		} catch (JSONException e) {
-			return null;
-		}
+		return profile.optString("site_url", "");
 	}
 
-	public String getMail() {
-		try {
-			return profile.getString("email");
-		} catch (JSONException e) {
-			return null;
-		}
+	/**
+	 * 
+	 * @return
+	 */
+	public String getMail(){
+		return profile.optString("email");
 	}
 
-	public String getCity() {
-		try {
-			return profile.getString("city");
-		} catch (JSONException e) {
-			return null;
-		}
+	/**
+	 * 
+	 * @return
+	 */
+	public String getCity(){
+		return profile.optString("city");
 	}
 
-	public String getCountry() {
-		try {
-			return profile.getString("country");
-		} catch (JSONException e) {
-			return null;
-		}
+	/**
+	 * 
+	 * @return
+	 */
+	public String getCountry(){
+		return profile.optString("country");
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public String getAbout() {
-		try {
-			return profile.getString("about");
-		} catch (JSONException e) {
-			return null;
-		}
+		return profile.optString("about", "");
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public String getAvatarUrl() {
-		try {
-			return profile.getString("avatar");
-		} catch (JSONException e) {
-			return null;
-		}
+		return profile.optString("avatar", null);
 	}
 
-	public String[] getTagList() {
+	/**
+	 * 
+	 * @return
+	 */
+	public String[] getTagList(){
 		JSONArray tags;
-		try {
-			tags = profile.getJSONArray("tags");
-		} catch (JSONException e) {
-			return null;
-		}
-		if (tags.length() > 0) {
+		tags = profile.optJSONArray("tags");
+		if (tags != null && tags.length() > 0) {
 			String tagList[] = new String[tags.length()];
 			for (int i = 0; i < tags.length(); i++) {
-				try {
-					tagList[i] = tags.getJSONObject(i).getString("name");
-				} catch (JSONException e) {
+				JSONObject obj = tags.optJSONObject(i);
+				if(obj != null)
+					tagList[i] = obj.optString("name",null);
+				else
 					tagList[i] = null;
-				}
 			}
 			return tagList;
 		}
 		return null;
 	}
 
-	public ThoundWrapper getDefaultThound() {
+	/**
+	 * 
+	 * @return
+	 * @throws IllegalThoundsObjectException
+	 */
+	public ThoundWrapper getDefaultThound()
+			throws IllegalThoundsObjectException {
 		JSONObject thound;
-		try {
-			thound = profile.getJSONObject("default_thound");
-			if (thound != null)
-				return new ThoundWrapper(thound);
-		} catch (JSONException e) {
-			return null;
-		}
+		thound = profile.optJSONObject("default_thound");
+		if (thound != null)
+			return new ThoundWrapper(thound);
 		return null;
 	}
-	
-	public int getThoundsListLength() throws JSONException {
-		if (thoundsList != null) {
-			return thoundsList.length();
-		}
-		return 0;
-	}
 
-	public ThoundWrapper getThounds(int index) throws JSONException {
-		return new ThoundWrapper(thoundsList.getJSONObject(index));
-	}
-
-	public ThoundWrapper[] getThoundsList() throws JSONException {
-		ThoundWrapper[] thoundsList = new ThoundWrapper[getThoundsListLength()];
-		for (int i = 0; i < getThoundsListLength(); i++)
-			thoundsList[i] = getThounds(i);
-		return thoundsList;
+	/**
+	 * 
+	 * @return
+	 */
+	public String getCreatedAt(){
+		return profile.optString("created_at");
 	}
 }

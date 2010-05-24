@@ -17,6 +17,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpProtocolParams;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.thounds.thoundsapi.utils.Base64Encoder;
 
 /**
  * This class provide a list of static methods to manage the communication
@@ -32,8 +33,10 @@ public class RequestWrapper {
 	private static String BAND_PATH = "/band";
 	private static String FRIENDSHIPS_PATH = "/friendships";
 	private static String THOUNDS_PATH = "/thounds";
+	private static String TRACK_PATH = "/tracks";
 	private static String LIBRARY_PATH = "/library";
 	private static String NOTIFICATIONS_PATH = "/notifications";
+	private static String TRACK_NOTIFICATIONS_PATH = "/tracks_notifications";
 	private static DefaultHttpClient httpclient = null;
 
 	protected static String USERNAME = "";
@@ -46,7 +49,7 @@ public class RequestWrapper {
 			httpclient = new DefaultHttpClient();
 
 		HttpProtocolParams.setUseExpectContinue(httpclient.getParams(), false);
-		if (useAuthentication) {
+		if (useAuthentication && !isLogged) {
 			httpclient.getCredentialsProvider().setCredentials(
 					new AuthScope(null, 80, "thounds", "Digest"),
 					new UsernamePasswordCredentials(USERNAME, PASSWORD));
@@ -96,6 +99,7 @@ public class RequestWrapper {
 	 */
 	public static boolean login(String username, String password)
 			throws ThoundsConnectionException {
+
 		USERNAME = username;
 		PASSWORD = password;
 		JSONObject json;
@@ -125,13 +129,14 @@ public class RequestWrapper {
 	}
 
 	/**
-	 * Thounds logout method
+	 * Thounds logout method.
 	 */
 	public static void logout() {
 		USERNAME = "";
 		PASSWORD = "";
-		httpclient.getConnectionManager().shutdown();
 		isLogged = false;
+		httpclient.getConnectionManager().shutdown();
+		httpclient = null;
 	}
 
 	/**
@@ -145,7 +150,7 @@ public class RequestWrapper {
 	}
 
 	/**
-	 * Method for retrieve the current user's informations.
+	 * Method for retrieve the current user's informations. Require login.
 	 * 
 	 * @return A UserWrapper object that represents the user
 	 * @throws ThoundsConnectionException
@@ -165,7 +170,7 @@ public class RequestWrapper {
 	/**
 	 * Method for retrieve a generic user's informations according to the user
 	 * code given as parameter. The user to retrieve must be a friend of the
-	 * current user.
+	 * current user. Require login.
 	 * 
 	 * @param userId
 	 *            Identification code of the user
@@ -189,7 +194,7 @@ public class RequestWrapper {
 	}
 
 	/**
-	 * Method for retrieve the current user's library
+	 * Method for retrieve the current user's library. Require login.
 	 * 
 	 * @return A {@link ThoundsCollectionWrapper} object that represent the
 	 *         library of the current user
@@ -204,7 +209,7 @@ public class RequestWrapper {
 	}
 
 	/**
-	 * Method for retrieve the current user's library
+	 * Method for retrieve the current user's library. Require login.
 	 * 
 	 * @param page
 	 *            page number
@@ -239,7 +244,7 @@ public class RequestWrapper {
 	/**
 	 * Method for retrieve a generic user's library according to the user code
 	 * given as parameter. The library to retrieve must be a library of the
-	 * friend of the current user.
+	 * friend of the current user. Require login.
 	 * 
 	 * @param userId
 	 *            Identification code of the user
@@ -258,14 +263,14 @@ public class RequestWrapper {
 	/**
 	 * Method for retrieve a generic user's library according to the user code
 	 * given as parameter. The library to retrieve must be a library of the
-	 * friend of the current user.
+	 * friend of the current user. Require login.
 	 * 
 	 * @param userId
 	 *            Identification code of the user
 	 * @param page
 	 *            page number
 	 * @param perPage
-	 *            number of thounds per page
+	 *            number of thounds to load at time
 	 * @return A {@link ThoundsCollectionWrapper} object that represent the
 	 *         library of the user
 	 * @throws ThoundsConnectionException
@@ -293,8 +298,11 @@ public class RequestWrapper {
 	}
 
 	/**
+	 * Method for retrieve the friends list (band) of the current user. Require
+	 * login.
 	 * 
-	 * @return
+	 * @return A {@link BandWrapper} object that represent the band of the
+	 *         current user
 	 * @throws ThoundsConnectionException
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
@@ -306,12 +314,15 @@ public class RequestWrapper {
 	}
 
 	/**
+	 * Method for retrieve the friends list (band) of the current user. Require
+	 * login.
 	 * 
 	 * @param page
 	 *            page number
 	 * @param perPage
-	 *            number of thounds per page
-	 * @return
+	 *            number of friends to load at time
+	 * @return A {@link BandWrapper} object that represent the band of the
+	 *         current user
 	 * @throws ThoundsConnectionException
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
@@ -332,9 +343,11 @@ public class RequestWrapper {
 	}
 
 	/**
+	 * Method for retrieve the friends list (band) of the user. Require login.
 	 * 
 	 * @param userId
-	 * @return
+	 *            Identification code of the user
+	 * @return A {@link BandWrapper} object that represent the band of the user
 	 * @throws ThoundsConnectionException
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
@@ -346,13 +359,15 @@ public class RequestWrapper {
 	}
 
 	/**
+	 * Method for retrieve the friends list (band) of the user. Require login.
 	 * 
 	 * @param userId
+	 *            Identification code of the user
 	 * @param page
 	 *            page number
 	 * @param perPage
-	 *            number of thounds per page
-	 * @return
+	 *            number of friends to load at time
+	 * @return A {@link BandWrapper} object that represent the band of the user
 	 * @throws ThoundsConnectionException
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
@@ -374,13 +389,234 @@ public class RequestWrapper {
 	}
 
 	/**
+	 * Method for retrieve the Thounds home informations. Require login.
+	 * 
+	 * @return A {@link HomeWrapper} object that contain the informations about
+	 *         Thounds home
+	 * @throws ThoundsConnectionException
+	 *             in case the connection was aborted
+	 * @throws IllegalThoundsObjectException
+	 *             in case the retrieved object is broken
+	 */
+	public static HomeWrapper loadHome() throws ThoundsConnectionException,
+			IllegalThoundsObjectException {
+		return loadHome(1, 10);
+	}
+
+	/**
+	 * Method for retrieve the Thounds home informations. Require login.
+	 * 
+	 * @param page
+	 *            page number
+	 * @param perPage
+	 *            number of thounds to load at time
+	 * @return A {@link HomeWrapper} object that contain the informations about
+	 *         Thounds home
+	 * @throws ThoundsConnectionException
+	 *             in case the connection was aborted
+	 * @throws IllegalThoundsObjectException
+	 *             in case the retrieved object is broken
+	 */
+	public static HomeWrapper loadHome(int page, int perPage)
+			throws ThoundsConnectionException, IllegalThoundsObjectException {
+		StringBuilder uriBuilder = new StringBuilder(HOST + HOME_PATH);
+		uriBuilder.append("?page=" + Integer.toString(page));
+		uriBuilder.append("&per_page=" + Integer.toString(perPage));
+
+		HttpGet httpget = new HttpGet(uriBuilder.toString());
+		httpget.addHeader("Accept", "application/json");
+
+		HttpResponse response = executeHttpRequest(httpget, true);
+		return new HomeWrapper(httpResponseToJSONObject(response));
+	}
+
+	/**
+	 * Method to perform a friendship request. Require login.
+	 * 
+	 * @param userId
+	 *            Identification code of the user
+	 * @return {@code true} if friendship request ends successfully, {@code
+	 *         false} otherwise
+	 * @throws ThoundsConnectionException
+	 *             in case the connection was aborted
+	 */
+	public static boolean friendshipRequest(int userId)
+			throws ThoundsConnectionException {
+		StringBuilder uriBuilder = new StringBuilder(HOST + USERS_PATH + "/"
+				+ Integer.toString(userId) + FRIENDSHIPS_PATH);
+		HttpPost httppost = new HttpPost(uriBuilder.toString());
+		httppost.addHeader("Accept", "application/json");
+		HttpResponse response = executeHttpRequest(httppost, true);
+		return (response.getStatusLine().getStatusCode() == 201);
+	}
+
+	/**
+	 * Method to accept a friendship request. Require login.
+	 * 
+	 * @param friendshipId
+	 *            Identification code of the friendship request
+	 * @throws ThoundsConnectionException
+	 *             in case the connection was aborted
+	 */
+	public static void acceptFriendship(int friendshipId)
+			throws ThoundsConnectionException {
+		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
+				+ FRIENDSHIPS_PATH + "/" + Integer.toString(friendshipId)
+				+ "?accept=true");
+		HttpPut httpput = new HttpPut(uriBuilder.toString());
+		httpput.addHeader("Accept", "application/json");
+		httpput.addHeader("Content-type", "application/json");
+
+		@SuppressWarnings("unused")
+		HttpResponse response = executeHttpRequest(httpput, true);
+	}
+
+	/**
+	 * Method to refuse a friendship request. Require login.
+	 * 
+	 * @param friendshipId
+	 *            Identification code of the friendship request
+	 * @throws ThoundsConnectionException
+	 *             in case the connection was aborted
+	 */
+	public static void refuseFriendship(int friendshipId)
+			throws ThoundsConnectionException {
+		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
+				+ FRIENDSHIPS_PATH + "/" + Integer.toString(friendshipId));
+		HttpPut httpput = new HttpPut(uriBuilder.toString());
+		httpput.addHeader("Accept", "application/json");
+		httpput.addHeader("Content-type", "application/json");
+
+		@SuppressWarnings("unused")
+		HttpResponse response = executeHttpRequest(httpput, true);
+	}
+
+	/**
+	 * Method to remove a friend from the current user band. Require login.
+	 * 
+	 * @param userId
+	 *            Identification code of the user
+	 * @return {@code true} if remove request ends successfully, {@code false}
+	 *         otherwise
+	 * @throws ThoundsConnectionException
+	 *             in case the connection was aborted
+	 */
+	public static boolean removeUserFromBand(int userId)
+			throws ThoundsConnectionException {
+		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
+				+ FRIENDSHIPS_PATH + "/" + Integer.toString(userId));
+		HttpDelete httpdelete = new HttpDelete(uriBuilder.toString());
+		httpdelete.addHeader("Accept", "application/json");
+		httpdelete.addHeader("Content-type", "application/json");
+
+		HttpResponse response = executeHttpRequest(httpdelete, true);
+		return (response.getStatusLine().getStatusCode() == 200);
+	}
+
+	/**
+	 * Method for retrieve informations about a thound. Requires login only if
+	 * requesting private (must be thound owner) or contacts (must be friend of
+	 * thound owner) thounds.
+	 * 
+	 * @param thoundId
+	 *            Identification code of the thound
+	 * @return A {@link ThoundWrapper} object that contain the informations
+	 *         about the selected thound
+	 * @throws ThoundsConnectionException
+	 *             in case the connection was aborted
+	 * @throws IllegalThoundsObjectException
+	 *             in case the retrieved object is broken
+	 */
+	public static ThoundWrapper loadThounds(int thoundId)
+			throws ThoundsConnectionException, IllegalThoundsObjectException {
+		StringBuilder uriBuilder = new StringBuilder(HOST + THOUNDS_PATH + "/"
+				+ Integer.toString(thoundId));
+		HttpGet httpget = new HttpGet(uriBuilder.toString());
+		httpget.addHeader("Accept", "application/json");
+		HttpResponse response = executeHttpRequest(httpget, isLogged);
+		return new ThoundWrapper(httpResponseToJSONObject(response));
+	}
+
+	/**
+	 * Method for retrieve informations about a thound. Requires login only if
+	 * requesting private (must be thound owner) or contacts (must be friend of
+	 * thound owner) thounds.
+	 * 
+	 * @param thoundHash
+	 *            Hash code of the thound
+	 * @return A {@link ThoundWrapper} object that contain the informations
+	 *         about the selected thound
+	 * @throws ThoundsConnectionException
+	 *             in case the connection was aborted
+	 * @throws IllegalThoundsObjectException
+	 *             in case the retrieved object is broken
+	 */
+	public static ThoundWrapper loadThounds(String thoundHash)
+			throws ThoundsConnectionException, IllegalThoundsObjectException {
+		StringBuilder uriBuilder = new StringBuilder(HOST + THOUNDS_PATH + "/"
+				+ thoundHash);
+		HttpGet httpget = new HttpGet(uriBuilder.toString());
+		httpget.addHeader("Accept", "application/json");
+		HttpResponse response = executeHttpRequest(httpget, isLogged);
+		return new ThoundWrapper(httpResponseToJSONObject(response));
+	}
+
+	/**
+	 * Method to remove a thound. Require login.
+	 * 
+	 * @param thoundId
+	 * @return {@code true} if remove request ends successfully, {@code false}
+	 *         otherwise
+	 * @throws ThoundsConnectionException
+	 *             in case the connection was aborted
+	 */
+	public static boolean removeThound(int thoundId)
+			throws ThoundsConnectionException {
+		StringBuilder uriBuilder = new StringBuilder(HOST + THOUNDS_PATH + "/"
+				+ Integer.toString(thoundId));
+		HttpDelete httpdelete = new HttpDelete(uriBuilder.toString());
+		httpdelete.addHeader("Accept", "application/json");
+		httpdelete.addHeader("Content-type", "application/json");
+
+		HttpResponse response = executeHttpRequest(httpdelete, true);
+		return (response.getStatusLine().getStatusCode() == 200);
+	}
+
+	/**
+	 * Method for retrieve the user's notifications. Require login.
+	 * 
+	 * @return {@link NotificationsWrapper} object that contains the user
+	 *         notifications
+	 * @throws ThoundsConnectionException
+	 *             in case the connection was aborted
+	 * @throws IllegalThoundsObjectException
+	 *             in case the retrieved object is broken
+	 */
+	public static NotificationsWrapper loadNotifications()
+			throws ThoundsConnectionException, IllegalThoundsObjectException {
+		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
+				+ NOTIFICATIONS_PATH);
+		HttpGet httpget = new HttpGet(uriBuilder.toString());
+		httpget.addHeader("Accept", "application/json");
+		HttpResponse response = executeHttpRequest(httpget, true);
+		return new NotificationsWrapper(httpResponseToJSONObject(response));
+	}
+
+	/**
+	 * Method to perform registration to Thounds.
 	 * 
 	 * @param name
+	 *            user full name
 	 * @param mail
+	 *            user email (used to login)
 	 * @param country
+	 *            user country
 	 * @param city
+	 *            user city
 	 * @param tags
-	 * @return
+	 *            tags associated (instruments, genres, etc.)
+	 * @return {@code true} if user registration ends successfully, {@code
+	 *         false} otherwise
 	 * @throws ThoundsConnectionException
 	 *             in case the connection was aborted
 	 */
@@ -418,111 +654,126 @@ public class RequestWrapper {
 
 	/**
 	 * 
+	 * @param title thound's title
+	 * @param tags
+	 * @param delay
+	 * @param offset
+	 * @param duration
+	 * @param lat
+	 * @param lng
+	 * @param thoundPath
+	 * @param coverPath
 	 * @return
 	 * @throws ThoundsConnectionException
-	 *             in case the connection was aborted
-	 * @throws IllegalThoundsObjectException
-	 *             in case the retrieved object is broken
 	 */
-	public static HomeWrapper loadHome() throws ThoundsConnectionException,
-			IllegalThoundsObjectException {
-		return loadHome(1, 10);
-	}
-
-	/**
-	 * 
-	 * @param page
-	 * @param perPage
-	 * @return
-	 * @throws ThoundsConnectionException
-	 *             in case the connection was aborted
-	 * @throws IllegalThoundsObjectException
-	 *             in case the retrieved object is broken
-	 */
-	public static HomeWrapper loadHome(int page, int perPage)
-			throws ThoundsConnectionException, IllegalThoundsObjectException {
-		StringBuilder uriBuilder = new StringBuilder(HOST + HOME_PATH);
-		uriBuilder.append("?page=" + Integer.toString(page));
-		uriBuilder.append("&per_page=" + Integer.toString(perPage));
-
-		HttpGet httpget = new HttpGet(uriBuilder.toString());
-		httpget.addHeader("Accept", "application/json");
-
-		HttpResponse response = executeHttpRequest(httpget, true);
-		return new HomeWrapper(httpResponseToJSONObject(response));
-	}
-
-	/**
-	 * 
-	 * @param userId
-	 * @return
-	 * @throws ThoundsConnectionException
-	 *             in case the connection was aborted
-	 */
-	public static boolean friendshipRequest(int userId)
+	public static boolean createThound(String title, String tags, int delay,
+			int offset, int duration, double lat, double lng,
+			String thoundPath, String coverPath)
 			throws ThoundsConnectionException {
-		StringBuilder uriBuilder = new StringBuilder(HOST + USERS_PATH + "/"
-				+ Integer.toString(userId) + FRIENDSHIPS_PATH);
+
+		JSONObject thoundJSON = new JSONObject();
+		JSONObject thoundFieldJSON = new JSONObject();
+		try {
+			String encodedThound = null;
+			String encodedCover = null;
+			if (thoundPath != null && !thoundPath.equals(""))
+				encodedThound = Base64Encoder.Encode(thoundPath);
+			if (coverPath != null && !coverPath.equals(""))
+				encodedCover = Base64Encoder.Encode(coverPath);
+			thoundFieldJSON.put("title", title);
+			thoundFieldJSON.put("tag_list", tags);
+			thoundFieldJSON.put("lat", lat);
+			thoundFieldJSON.put("lng", lng);
+			thoundFieldJSON.put("delay", delay);
+			thoundFieldJSON.put("duration", duration);
+			thoundFieldJSON.put("offset", offset);
+			thoundFieldJSON.put("thoundfile", encodedThound);
+			thoundFieldJSON.put("coverfile", encodedCover);
+			thoundJSON.put("track", thoundFieldJSON);
+		} catch (JSONException e) {
+			throw new RuntimeException("user JSONObject creation error");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		StringBuilder uriBuilder = new StringBuilder(HOST + TRACK_PATH);
 		HttpPost httppost = new HttpPost(uriBuilder.toString());
 		httppost.addHeader("Accept", "application/json");
+		httppost.addHeader("Content-type", "application/json");
+		StringEntity se = null;
+		try {
+			se = new StringEntity(thoundJSON.toString());
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(
+					"JSONObject to StringEntity conversion error");
+		}
+		httppost.setEntity(se);
 		HttpResponse response = executeHttpRequest(httppost, true);
 		return (response.getStatusLine().getStatusCode() == 201);
 	}
 
 	/**
 	 * 
-	 * @param friendshipId
-	 * @throws ThoundsConnectionException
-	 *             in case the connection was aborted
-	 */
-	public static void acceptFriendship(int friendshipId)
-			throws ThoundsConnectionException {
-		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
-				+ FRIENDSHIPS_PATH + "/" + Integer.toString(friendshipId)
-				+ "?accept=true");
-		HttpPut httpput = new HttpPut(uriBuilder.toString());
-		httpput.addHeader("Accept", "application/json");
-		httpput.addHeader("Content-type", "application/json");
-
-		@SuppressWarnings("unused")
-		HttpResponse response = executeHttpRequest(httpput, true);
-	}
-
-	/**
-	 * 
-	 * @param friendshipId
-	 * @throws ThoundsConnectionException
-	 *             in case the connection was aborted
-	 */
-	public static void refuseFriendship(int friendshipId)
-			throws ThoundsConnectionException {
-		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
-				+ FRIENDSHIPS_PATH + "/" + Integer.toString(friendshipId));
-		HttpPut httpput = new HttpPut(uriBuilder.toString());
-		httpput.addHeader("Accept", "application/json");
-		httpput.addHeader("Content-type", "application/json");
-
-		@SuppressWarnings("unused")
-		HttpResponse response = executeHttpRequest(httpput, true);
-	}
-
-	/**
-	 * 
-	 * @param userId
+	 * @param thound_id
+	 * @param title
+	 * @param tags
+	 * @param delay
+	 * @param offset
+	 * @param duration
+	 * @param lat
+	 * @param lng
+	 * @param thoundPath
+	 * @param coverPath
 	 * @return
 	 * @throws ThoundsConnectionException
-	 *             in case the connection was aborted
 	 */
-	public static boolean removeUserFromBand(int userId)
+	public static boolean createTrack(int thound_id, String title, String tags,
+			int delay, int offset, int duration, double lat, double lng,
+			String thoundPath, String coverPath)
 			throws ThoundsConnectionException {
-		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
-				+ FRIENDSHIPS_PATH + "/" + Integer.toString(userId));
-		HttpDelete httpdelete = new HttpDelete(uriBuilder.toString());
-		httpdelete.addHeader("Accept", "application/json");
-		httpdelete.addHeader("Content-type", "application/json");
 
-		HttpResponse response = executeHttpRequest(httpdelete, true);
-		return (response.getStatusLine().getStatusCode() == 200);
+		JSONObject thoundJSON = new JSONObject();
+		JSONObject thoundFieldJSON = new JSONObject();
+		try {
+			String encodedThound = null;
+			String encodedCover = null;
+			if (thoundPath != null && !thoundPath.equals(""))
+				encodedThound = Base64Encoder.Encode(thoundPath);
+			if (coverPath != null && !coverPath.equals(""))
+				encodedCover = Base64Encoder.Encode(coverPath);
+			thoundFieldJSON.put("title", title);
+			thoundFieldJSON.put("tag_list", tags);
+			thoundFieldJSON.put("lat", lat);
+			thoundFieldJSON.put("lng", lng);
+			thoundFieldJSON.put("delay", delay);
+			thoundFieldJSON.put("duration", duration);
+			thoundFieldJSON.put("offset", offset);
+			thoundFieldJSON.put("thoundfile", encodedThound);
+			thoundFieldJSON.put("coverfile", encodedCover);
+			thoundJSON.put("track", thoundFieldJSON);
+		} catch (JSONException e) {
+			throw new RuntimeException("user JSONObject creation error");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		StringBuilder uriBuilder = new StringBuilder(HOST + TRACK_PATH
+				+ "?thound_id=" + Integer.toString(thound_id));
+		HttpPost httppost = new HttpPost(uriBuilder.toString());
+		httppost.addHeader("Accept", "application/json");
+		httppost.addHeader("Content-type", "application/json");
+		StringEntity se = null;
+		try {
+			se = new StringEntity(thoundJSON.toString());
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(
+					"JSONObject to StringEntity conversion error");
+		}
+		httppost.setEntity(se);
+		HttpResponse response = executeHttpRequest(httppost, true);
+		return (response.getStatusLine().getStatusCode() == 201);
 	}
 
 	/**
@@ -530,49 +781,10 @@ public class RequestWrapper {
 	 * @param thoundId
 	 * @return
 	 * @throws ThoundsConnectionException
-	 *             in case the connection was aborted
-	 * @throws IllegalThoundsObjectException
-	 *             in case the retrieved object is broken
 	 */
-	public static ThoundWrapper loadThounds(int thoundId)
-			throws ThoundsConnectionException, IllegalThoundsObjectException {
-		StringBuilder uriBuilder = new StringBuilder(HOST + THOUNDS_PATH + "/"
-				+ Integer.toString(thoundId));
-		HttpGet httpget = new HttpGet(uriBuilder.toString());
-		httpget.addHeader("Accept", "application/json");
-		HttpResponse response = executeHttpRequest(httpget, isLogged);
-		return new ThoundWrapper(httpResponseToJSONObject(response));
-	}
-
-	/**
-	 * 
-	 * @param thoundHash
-	 * @return
-	 * @throws ThoundsConnectionException
-	 *             in case the connection was aborted
-	 * @throws IllegalThoundsObjectException
-	 *             in case the retrieved object is broken
-	 */
-	public static ThoundWrapper loadThounds(String thoundHash)
-			throws ThoundsConnectionException, IllegalThoundsObjectException {
-		StringBuilder uriBuilder = new StringBuilder(HOST + THOUNDS_PATH + "/"
-				+ thoundHash);
-		HttpGet httpget = new HttpGet(uriBuilder.toString());
-		httpget.addHeader("Accept", "application/json");
-		HttpResponse response = executeHttpRequest(httpget, isLogged);
-		return new ThoundWrapper(httpResponseToJSONObject(response));
-	}
-
-	/**
-	 * 
-	 * @param thoundId
-	 * @return
-	 * @throws ThoundsConnectionException
-	 *             in case the connection was aborted
-	 */
-	public static boolean removeThound(int thoundId)
+	public static boolean removeTrackNotification(int thoundId)
 			throws ThoundsConnectionException {
-		StringBuilder uriBuilder = new StringBuilder(HOST + THOUNDS_PATH + "/"
+		StringBuilder uriBuilder = new StringBuilder(HOST + TRACK_NOTIFICATIONS_PATH + "/"
 				+ Integer.toString(thoundId));
 		HttpDelete httpdelete = new HttpDelete(uriBuilder.toString());
 		httpdelete.addHeader("Accept", "application/json");
@@ -580,24 +792,5 @@ public class RequestWrapper {
 
 		HttpResponse response = executeHttpRequest(httpdelete, true);
 		return (response.getStatusLine().getStatusCode() == 200);
-	}
-
-	/**
-	 * Method for retrieve the user's notifications
-	 * 
-	 * @return {@link NotificationsWrapper} object that contains the
-	 *         user notifications
-	 * @throws ThoundsConnectionException
-	 *             in case the connection was aborted
-	 * @throws IllegalThoundsObjectException
-	 *             in case the retrieved object is broken
-	 */
-	public static NotificationsWrapper getNotifications()
-			throws ThoundsConnectionException, IllegalThoundsObjectException {
-		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH + NOTIFICATIONS_PATH);
-		HttpGet httpget = new HttpGet(uriBuilder.toString());
-		httpget.addHeader("Accept", "application/json");
-		HttpResponse response = executeHttpRequest(httpget, true);
-		return new NotificationsWrapper(httpResponseToJSONObject(response));
 	}
 }

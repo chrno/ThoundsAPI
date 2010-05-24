@@ -4,83 +4,184 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ThoundWrapper{
+/**
+ * 
+ *
+ */
+public class ThoundWrapper {
 	private JSONObject thound;
 	private JSONArray tracks;
+	private static String[] fieldList = { "tracks", "bmp", "banned",
+			"created_at", "has_new_tracks", "id", "lead_track_id",
+			"mix_duration", "mix_url", "privacy", "public_id", "public_url",
+			"tags", "user_id", "user_avatar" };
 
-	public ThoundWrapper(JSONObject thound) {
+	/**
+	 * 
+	 * @param thound
+	 * @throws IllegalThoundsObjectException
+	 */
+	public ThoundWrapper(JSONObject thound)
+			throws IllegalThoundsObjectException {
 		this.thound = thound;
+		for (int i = 0; i < fieldList.length; i++)
+			if (!thound.has(fieldList[i]))
+				throw new IllegalThoundsObjectException();
 		try {
 			tracks = thound.getJSONArray("tracks");
 		} catch (JSONException e) {
-			tracks = null;
+			throw new IllegalThoundsObjectException();
 		}
 	}
 
-	public int getBmp() throws JSONException {
-		return thound.getInt("bmp");
+	/**
+	 * 
+	 * @return
+	 */
+	public int getBmp() {
+		return thound.optInt("bmp");
 	}
 
-	public boolean isBanned() throws JSONException {
-		return thound.getBoolean("banned");
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isBanned() {
+		return thound.optBoolean("banned");
 	}
 
-	public boolean hasNewTracks() throws JSONException {
-		return thound.getBoolean("has_new_tracks");
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean hasNewTracks() {
+		return thound.optBoolean("has_new_tracks");
 	}
 
-	public int getId() throws JSONException {
-		return thound.getInt("id");
+	/**
+	 * 
+	 * @return
+	 */
+	public int getId() {
+		return thound.optInt("id");
 	}
 
-	public int getLeadTrackId() throws JSONException {
-		return thound.getInt("lead_track_id");
+	/**
+	 * 
+	 * @return
+	 */
+	public int getLeadTrackId() {
+		return thound.optInt("lead_track_id");
 	}
 
-	public int getMixDuration() throws JSONException {
-		return thound.getInt("mix_duration");
+	/**
+	 * 
+	 * @return
+	 */
+	public int getMixDuration() {
+		return thound.optInt("mix_duration");
 	}
 
-	public String getMixUrl() throws JSONException {
-		return thound.getString("mix_url");
+	/**
+	 * 
+	 * @return
+	 */
+	public String getMixUrl() {
+		return thound.optString("mix_url","");
 	}
 
-	public String getPrivacy() throws JSONException {
-		return thound.getString("privacy");
+	/**
+	 * 
+	 * @return
+	 */
+	public String getPrivacy() {
+		return thound.optString("privacy");
 	}
 
-	public String getPublicId() throws JSONException {
-		return thound.getString("public_id");
+	/**
+	 * 
+	 * @return
+	 */
+	public String getPublicId(){
+		return thound.optString("public_id");
 	}
 
-	public String getPublicUrl() throws JSONException {
-		return thound.getString("public_url");
+	/**
+	 * 
+	 * @return
+	 */
+	public String getPublicUrl(){
+		return thound.optString("public_url");
 	}
 
-	public String getTags() throws JSONException {
-		return thound.getString("tags");
+	/**
+	 * 
+	 * @return
+	 */
+	public String getTags(){
+		return thound.optString("tags");
 	}
 
-	public int getUserId() throws JSONException {
-		return thound.getInt("user_id");
+	/**
+	 * 
+	 * @return
+	 */
+	public int getUserId(){
+		return thound.optInt("user_id");
 	}
 
-	public String getUserAvatarUrl() throws JSONException {
-		return thound.getString("user_avatar");
+	/**
+	 * 
+	 * @return
+	 */
+	public String getUserAvatarUrl(){
+		return thound.optString("user_avatar","");
 	}
-	
-	public int getTrackListLength(){
+
+	/**
+	 * 
+	 * @return
+	 */
+	public int getTrackListLength() {
 		return tracks.length();
 	}
-	
-	public TrackWrapper getTrack(int index) throws JSONException{
-		return new TrackWrapper(tracks.getJSONObject(index));
+
+	/**
+	 * 
+	 * @param index
+	 * @return
+	 * @throws IllegalThoundsObjectException
+	 */
+	public TrackWrapper getTrack(int index)
+			throws IllegalThoundsObjectException {
+		JSONObject obj = null;
+		try {
+			obj = tracks.getJSONObject(index);
+		} catch (JSONException e) {
+			throw new IllegalThoundsObjectException();
+		}
+		if (obj == null)
+			return null;
+		return new TrackWrapper(obj);
 	}
-	
-	public TrackWrapper[] getTracksList()throws JSONException{
+
+	/**
+	 * 
+	 * @return
+	 * @throws IllegalThoundsObjectException
+	 */
+	public TrackWrapper[] getTracksList() throws IllegalThoundsObjectException {
 		TrackWrapper[] tracksList = new TrackWrapper[getTrackListLength()];
-		for(int i=0; i < getTrackListLength(); i++)
+		for (int i = 0; i < getTrackListLength(); i++)
 			tracksList[i] = getTrack(i);
 		return tracksList;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String getCreatedAt(){
+		return thound.optString("created_at");
 	}
 }

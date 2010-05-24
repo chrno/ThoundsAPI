@@ -4,104 +4,160 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * 
+ *
+ */
 public class NotificationsWrapper {
 	JSONObject notification;
 	JSONArray userList;
 	JSONArray bannedThoundsList;
 	JSONArray newThoundsList;
-	public NotificationsWrapper(JSONObject notification) {
+
+	private static String[] fieldList = { "band_requests", "banned_thounds",
+			"new_thounds" };
+
+	/**
+	 * 
+	 * @param notification
+	 * @throws IllegalThoundsObjectException
+	 */
+	public NotificationsWrapper(JSONObject notification)
+			throws IllegalThoundsObjectException {
 		this.notification = notification;
-		try {
-			userList = notification.getJSONArray("band_requests");
-		} catch (JSONException e) {
-			userList = null;
-		}
-		try {
-			bannedThoundsList = notification.getJSONArray("banned_thounds");
-		} catch (JSONException e) {
-			userList = null;
-		}
-		try {
-			newThoundsList = notification.getJSONArray("new_thounds");
-		} catch (JSONException e) {
-			userList = null;
-		}
+		for (int i = 0; i < fieldList.length; i++)
+			if (!notification.has(fieldList[i]))
+				throw new IllegalThoundsObjectException();
+		userList = notification.optJSONArray("band_requests");
+		bannedThoundsList = notification.optJSONArray("banned_thounds");
+		newThoundsList = notification.optJSONArray("new_thounds");
 	}
-	
-	public int getBannedThoundsListLength() throws JSONException {
+
+	/**
+	 * 
+	 * @return
+	 */
+	public int getBannedThoundsListLength() {
 		if (bannedThoundsList != null) {
 			return bannedThoundsList.length();
 		}
 		return 0;
 	}
-	
-	public ThoundWrapper getBannedThounds(int index){
+
+	/**
+	 * 
+	 * @param index
+	 * @return
+	 * @throws IllegalThoundsObjectException
+	 */
+	public ThoundWrapper getBannedThounds(int index)
+			throws IllegalThoundsObjectException {
 		JSONObject thound;
 		try {
-			thound = bannedThoundsList.getJSONObject(index);
+			thound = bannedThoundsList.getJSONObject(index).getJSONObject(
+					"thound");
 		} catch (JSONException e) {
-			thound = null;
+			throw new IllegalThoundsObjectException();
 		}
-		if(thound != null)
+		if (thound != null)
 			return new ThoundWrapper(thound);
 		return null;
 	}
 
-	public ThoundWrapper[] getBannedThoundsList() throws JSONException {
+	/**
+	 * 
+	 * @return
+	 * @throws IllegalThoundsObjectException
+	 */
+	public ThoundWrapper[] getBannedThoundsList()
+			throws IllegalThoundsObjectException {
 		ThoundWrapper[] thoundsList = new ThoundWrapper[getBannedThoundsListLength()];
 		for (int i = 0; i < getBannedThoundsListLength(); i++)
 			thoundsList[i] = getBannedThounds(i);
 		return thoundsList;
 	}
-	
-	public int getNewThoundsListLength() throws JSONException {
+
+	/**
+	 * 
+	 * @return
+	 */
+	public int getNewThoundsListLength() {
 		if (newThoundsList != null) {
 			return newThoundsList.length();
 		}
 		return 0;
 	}
-	
-	public ThoundWrapper getNewThounds(int index){
+
+	/**
+	 * 
+	 * @param index
+	 * @return
+	 * @throws IllegalThoundsObjectException
+	 */
+	public ThoundWrapper getNewThounds(int index)
+			throws IllegalThoundsObjectException {
 		JSONObject thound;
 		try {
-			thound = newThoundsList.getJSONObject(index);
+			thound = newThoundsList.getJSONObject(index)
+					.getJSONObject("thound");
 		} catch (JSONException e) {
-			thound = null;
+			throw new IllegalThoundsObjectException();
 		}
-		if(thound != null)
+		if (thound != null)
 			return new ThoundWrapper(thound);
 		return null;
 	}
-	
 
-	public ThoundWrapper[] getNewThoundsList() throws JSONException {
+	/**
+	 * 
+	 * @return
+	 * @throws IllegalThoundsObjectException
+	 */
+	public ThoundWrapper[] getNewThoundsList()
+			throws IllegalThoundsObjectException {
 		ThoundWrapper[] thoundsList = new ThoundWrapper[getNewThoundsListLength()];
 		for (int i = 0; i < getNewThoundsListLength(); i++)
 			thoundsList[i] = getNewThounds(i);
 		return thoundsList;
 	}
 
-	
-	public int getBandRequestListLength() throws JSONException {
+	/**
+	 * 
+	 * @return
+	 */
+	public int getBandRequestListLength() {
 		if (userList != null) {
 			return userList.length();
 		}
 		return 0;
 	}
-	
-	public UserWrapper getBandRequest(int index){
+
+	/**
+	 * 
+	 * @param index
+	 * @return
+	 * @throws IllegalThoundsObjectException
+	 */
+	public UserWrapper getBandRequest(int index)
+			throws IllegalThoundsObjectException {
 		JSONObject thound;
 		try {
-			thound = userList.getJSONObject(index);
+			thound = userList.getJSONObject(index).getJSONObject("user");
 		} catch (JSONException e) {
-			thound = null;
+			throw new IllegalThoundsObjectException();
 		}
-		if(thound != null)
+		if (thound != null)
 			return new UserWrapper(thound);
 		return null;
 	}
 
-	public UserWrapper[] getBandRequestList() throws JSONException {
+	/**
+	 * 
+	 * @return
+	 * @throws IllegalThoundsObjectException
+	 */
+	public UserWrapper[] getBandRequestList()
+			throws IllegalThoundsObjectException {
 		UserWrapper[] bandRequestList = new UserWrapper[getBandRequestListLength()];
 		for (int i = 0; i < getBandRequestListLength(); i++)
 			bandRequestList[i] = getBandRequest(i);

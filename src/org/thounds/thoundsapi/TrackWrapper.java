@@ -1,90 +1,207 @@
 package org.thounds.thoundsapi;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-public class TrackWrapper{
+/**
+ * 
+ *
+ */
+public class TrackWrapper {
 
 	private JSONObject track;
+	private static String[] fieldList = { "cover", "delay", "duration", "host",
+			"id", "offset", "path", "privacy", "tags", "thound_id", "title",
+			"uri", "user_id", "user", "lat", "lng", "created_at" };
 
-	public TrackWrapper(JSONObject track){
+	/**
+	 * 
+	 * @param track
+	 * @throws IllegalThoundsObjectException
+	 */
+	public TrackWrapper(JSONObject track) throws IllegalThoundsObjectException {
 		this.track = track;
-	}
-	
-	public String getCover() throws JSONException{
-		return track.getString("cover");
-	}
-	
-	public int getDelay() throws JSONException{
-		return track.getInt("delay");
-	}
-	
-	public int getDuration() throws JSONException{
-		return track.getInt("duration");
-	}
-	
-	public String getHost()throws JSONException{
-		return track.getString("host");
-	}
-	
-	public int getId() throws JSONException {
-		return track.getInt("id");
-	}
-	
-	public int getOffset() throws JSONException{
-		return track.getInt("offset");
-	}
-	
-	public String getPath()throws JSONException{
-		return track.getString("path");
-	}
-	
-	public String getPrivacy() throws JSONException {
-		return track.getString("privacy");
-	}
-	
-	public String getTags() throws JSONException {
-		return track.getString("tags");
-	}
-	
-	public int getThoundId() throws JSONException {
-		return track.getInt("thound_id");
-	}
-	
-	public String getTitle() throws JSONException {
-		return track.getString("title");
-	}
-	
-	public String getUri() throws JSONException {
-		return track.getString("uri");
-	}
-	
-	public int getUserId() throws JSONException {
-		return track.getInt("user_id");
-	}
-	
-	public String getUserAvatarUrl()throws JSONException {
-		return track.getJSONObject("user").getString("avatar");
+		for (int i = 0; i < fieldList.length; i++)
+			if (!track.has(fieldList[i]))
+				throw new IllegalThoundsObjectException();
 	}
 
-	public String getUserCity()throws JSONException {
-		return track.getJSONObject("user").getString("city");
+	/**
+	 * 
+	 * @return
+	 */
+	public String getCover() {
+		return track.optString("cover");
 	}
-	
-	public String getUserCountry()throws JSONException {
-		return track.getJSONObject("user").getString("country");
+
+	/**
+	 * 
+	 * @return
+	 */
+	public int getDelay() {
+		return track.optInt("delay");
 	}
-	
-	public String getUserName()throws JSONException {
-		return track.getJSONObject("user").getString("name");
+
+	/**
+	 * 
+	 * @return
+	 */
+	public int getDuration() {
+		return track.optInt("duration");
 	}
-	
-	public double getLat() throws JSONException {
-		return track.getDouble("lat");
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getHost() {
+		return track.optString("host");
 	}
-	
-	public double getLng() throws JSONException {
-		return track.getDouble("lng");
+
+	/**
+	 * 
+	 * @return
+	 */
+	public int getId() {
+		return track.optInt("id");
 	}
-	
+
+	/**
+	 * 
+	 * @return
+	 */
+	public int getOffset() {
+		return track.optInt("offset");
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getPath() {
+		return track.optString("path", null);
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getPrivacy() {
+		return track.optString("privacy");
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getTags() {
+		return track.optString("tags");
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public int getThoundId() {
+		return track.optInt("thound_id");
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getTitle() {
+		return track.optString("title");
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getUri() {
+		return track.optString("uri");
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public int getUserId() {
+		return track.optInt("user_id");
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getUserAvatarUrl() {
+		JSONObject obj;
+		obj = track.optJSONObject("user");
+		if (obj != null)
+			return obj.optString("avatar");
+		else
+			return null;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getUserCity(){
+		JSONObject obj;
+		obj = track.optJSONObject("user");
+		if (obj != null)
+			return obj.optString("city");
+		else
+			return null;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getUserCountry(){
+		JSONObject obj;
+		obj = track.optJSONObject("user");
+		if (obj != null)
+			return obj.optString("country");
+		else
+			return null;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getUserName(){
+		JSONObject obj;
+		obj = track.optJSONObject("user");
+		if (obj != null)
+			return obj.optString("name");
+		else
+			return null;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public double getLat(){
+		return track.optDouble("lat");
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public double getLng() {
+		return track.optDouble("lng");
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getCreatedAt(){
+		return track.optString("created_at");
+	}
 }

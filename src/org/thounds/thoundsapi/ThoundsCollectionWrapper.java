@@ -1,65 +1,88 @@
 package org.thounds.thoundsapi;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * 
+ *
+ */
 public class ThoundsCollectionWrapper {
 	JSONObject collection;
 	JSONArray thoundsList;
-	public ThoundsCollectionWrapper(JSONObject collection) {
+	private static String[] fieldList = { "thounds", "page", "pages", "total" };
+
+	/**
+	 * 
+	 * @param collection
+	 * @throws IllegalThoundsObjectException
+	 */
+	public ThoundsCollectionWrapper(JSONObject collection)
+			throws IllegalThoundsObjectException {
 		this.collection = collection;
-		try {
-			thoundsList = collection.getJSONArray("thounds");
-		} catch (JSONException e) {
-			thoundsList = null;
-		}
+		for (int i = 0; i < fieldList.length; i++)
+			if (!collection.has(fieldList[i]))
+				throw new IllegalThoundsObjectException();
+		thoundsList = collection.optJSONArray("thounds");
 	}
-	
+
+	/**
+	 * 
+	 * @return
+	 */
 	public int getPageTotalNumber() {
-		try {
-			return collection.getInt("pages");
-		} catch (JSONException e) {
-			return 0;
-		}
+		return collection.optInt("pages");
 	}
 
-	public int getThoundsTotalNumber(){
-		try {
-			return collection.getInt("total");
-		} catch (JSONException e) {
-			return 0;
-		}
+	/**
+	 * 
+	 * @return
+	 */
+	public int getThoundsTotalNumber() {
+		return collection.optInt("total");
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public int getCurrentPageNumber() {
-		try {
-			return collection.getInt("page");
-		} catch (JSONException e) {
-			return 0;
-		}
+		return collection.optInt("page");
 	}
-	
-	public int getThoundsListLength() throws JSONException {
+
+	/**
+	 * 
+	 * @return
+	 */
+	public int getThoundsListLength() {
 		if (thoundsList != null) {
 			return thoundsList.length();
 		}
 		return 0;
 	}
-	
-	public ThoundWrapper getThounds(int index){
+
+	/**
+	 * 
+	 * @param index
+	 * @return
+	 * @throws IllegalThoundsObjectException
+	 */
+	public ThoundWrapper getThounds(int index)
+			throws IllegalThoundsObjectException {
 		JSONObject thound;
-		try {
-			thound = thoundsList.getJSONObject(index);
-		} catch (JSONException e) {
-			thound = null;
-		}
-		if(thound != null)
+		thound = thoundsList.optJSONObject(index);
+		if (thound != null)
 			return new ThoundWrapper(thound);
 		return null;
 	}
 
-	public ThoundWrapper[] getThoundsList() throws JSONException {
+	/**
+	 * 
+	 * @return
+	 * @throws IllegalThoundsObjectException
+	 */
+	public ThoundWrapper[] getThoundsList()
+			throws IllegalThoundsObjectException {
 		ThoundWrapper[] thoundsList = new ThoundWrapper[getThoundsListLength()];
 		for (int i = 0; i < getThoundsListLength(); i++)
 			thoundsList[i] = getThounds(i);
