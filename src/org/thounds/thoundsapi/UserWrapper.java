@@ -10,7 +10,7 @@ import org.json.JSONObject;
 public class UserWrapper {
 
 	private JSONObject profile;
-	static private String[] fieldList = { "id", "name", "site_url", "email",
+	static private String[] fieldList = { "id", "name", "site_url",
 			"city", "country", "about", "avatar", "tags", "default_thound", "created_at" };
 
 	/**
@@ -21,8 +21,11 @@ public class UserWrapper {
 	public UserWrapper(JSONObject profile) throws IllegalThoundsObjectException {
 		this.profile = profile;
 		for (int i = 0; i < fieldList.length; i++)
-			if (!profile.has(fieldList[i]))
+			if (!profile.has(fieldList[i])){
+				System.out.println(fieldList[i]);
+				System.out.println(i);
 				throw new IllegalThoundsObjectException();
+			}
 	}
 
 	/**
