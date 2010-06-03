@@ -10,19 +10,13 @@ import org.json.JSONObject;
 public class ThoundsCollectionWrapper {
 	JSONObject collection;
 	JSONArray thoundsList;
-	private static String[] fieldList = { "thounds", "page", "pages", "total" };
 
 	/**
 	 * 
 	 * @param collection
-	 * @throws IllegalThoundsObjectException
 	 */
-	public ThoundsCollectionWrapper(JSONObject collection)
-			throws IllegalThoundsObjectException {
+	public ThoundsCollectionWrapper(JSONObject collection){
 		this.collection = collection;
-		for (int i = 0; i < fieldList.length; i++)
-			if (!collection.has(fieldList[i]))
-				throw new IllegalThoundsObjectException();
 		thoundsList = collection.optJSONArray("thounds");
 	}
 

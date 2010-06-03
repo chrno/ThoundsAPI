@@ -28,7 +28,7 @@ import org.thounds.thoundsapi.utils.Base64Encoder;
 
 public class RequestWrapper {
 	// private static String STAGE_HOST_PATH = "http://stage.thounds.com";
-	private static String HOST = "http://thounds.com";
+	private static String HOST = "http://stage.thounds.com";
 	private static String PROFILE_PATH = "/profile";
 	private static String HOME_PATH = "/home";
 	private static String USERS_PATH = "/users";
@@ -83,6 +83,7 @@ public class RequestWrapper {
 			in.close();
 
 			result = sb.toString();
+			System.out.println("------------"+result);
 			return new JSONObject(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -94,6 +95,10 @@ public class RequestWrapper {
 		connector = con;
 	}
 
+	public static ThoundsConnector getConnector() {
+		return connector;
+	}
+	
 	/*
 	 * /** Thounds login method.
 	 * 

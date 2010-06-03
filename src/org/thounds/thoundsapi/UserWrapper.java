@@ -20,12 +20,12 @@ public class UserWrapper {
 	 */
 	public UserWrapper(JSONObject profile) throws IllegalThoundsObjectException {
 		this.profile = profile;
-		for (int i = 0; i < fieldList.length; i++)
+		/*for (int i = 0; i < fieldList.length; i++)
 			if (!profile.has(fieldList[i])){
 				System.out.println(fieldList[i]);
 				System.out.println(i);
 				throw new IllegalThoundsObjectException();
-			}
+			}*/
 	}
 
 	/**

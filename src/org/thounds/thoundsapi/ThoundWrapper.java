@@ -11,27 +11,15 @@ import org.json.JSONObject;
 public class ThoundWrapper {
 	private JSONObject thound;
 	private JSONArray tracks;
-	private static String[] fieldList = { "tracks", "bmp", "banned",
-			"created_at", "has_new_tracks", "id", "lead_track_id",
-			"mix_duration", "mix_url", "privacy", "public_id", "public_url",
-			"tags", "user_id", "user_avatar" };
 
 	/**
 	 * 
 	 * @param thound
-	 * @throws IllegalThoundsObjectException
 	 */
 	public ThoundWrapper(JSONObject thound)
 			throws IllegalThoundsObjectException {
 		this.thound = thound;
-		for (int i = 0; i < fieldList.length; i++)
-			if (!thound.has(fieldList[i]))
-				throw new IllegalThoundsObjectException();
-		try {
-			tracks = thound.getJSONArray("tracks");
-		} catch (JSONException e) {
-			throw new IllegalThoundsObjectException();
-		}
+		tracks = thound.optJSONArray("tracks");
 	}
 
 	/**

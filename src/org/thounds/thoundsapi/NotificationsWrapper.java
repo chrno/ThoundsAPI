@@ -14,20 +14,12 @@ public class NotificationsWrapper {
 	JSONArray bannedThoundsList;
 	JSONArray newThoundsList;
 
-	private static String[] fieldList = { "band_requests", "banned_thounds",
-			"new_thounds" };
-
 	/**
 	 * 
 	 * @param notification
-	 * @throws IllegalThoundsObjectException
 	 */
-	public NotificationsWrapper(JSONObject notification)
-			throws IllegalThoundsObjectException {
+	public NotificationsWrapper(JSONObject notification){
 		this.notification = notification;
-		for (int i = 0; i < fieldList.length; i++)
-			if (!notification.has(fieldList[i]))
-				throw new IllegalThoundsObjectException();
 		userList = notification.optJSONArray("band_requests");
 		bannedThoundsList = notification.optJSONArray("banned_thounds");
 		newThoundsList = notification.optJSONArray("new_thounds");

@@ -10,23 +10,14 @@ import org.json.JSONObject;
 public class BandWrapper{
 	private JSONObject band;
 	private JSONArray friendList;
-	private static String[] fieldList={"friends-collection","page", "pages", "total"};
 
 	/**
 	 * 
 	 * @param band
-	 * @throws IllegalThoundsObjectException
 	 */
-	public BandWrapper(JSONObject band) throws IllegalThoundsObjectException{
+	public BandWrapper(JSONObject band){
 		this.band = band;
-		for (int i = 0; i < fieldList.length; i++)
-			if (!band.has(fieldList[i]))
-				throw new IllegalThoundsObjectException();
-		try{
 		friendList = band.optJSONObject("friends-collection").optJSONArray("friends");
-		}catch(Exception e){
-			throw new IllegalThoundsObjectException();
-		}
 	}
 	
 	/**

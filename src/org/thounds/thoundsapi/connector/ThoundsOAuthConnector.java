@@ -1,10 +1,7 @@
 package org.thounds.thoundsapi.connector;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
 
-import oauth.signpost.OAuth;
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.basic.DefaultOAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
@@ -14,22 +11,24 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.thounds.thoundsapi.ThoundsConnectionException;
 
-import com.sun.jndi.toolkit.url.Uri;
-
+/**
+ * 
+ *
+ */
 public class ThoundsOAuthConnector implements ThoundsConnector {
-	private static String CONSUMER_KEY = null;
-	private static String CONSUMER_SECRET = null;
-	private static String REQUEST_TOKEN_ENDPOINT_URL;
-	private static String ACCESS_TOKEN_ENDPOINT_URL;
-	private static String AUTHORIZE_WEBSITE_URL;
-	private static String CALLBACK_URL;
-
+	private static String REQUEST_TOKEN_ENDPOINT_URL="http://stage.thounds.com/oauth/request_token";
+	private static String ACCESS_TOKEN_ENDPOINT_URL="http://stage.thounds.com/oauth/access_token";
+	private static String AUTHORIZE_WEBSITE_URL = "http://stage.thounds.com/oauth/authorize";
+	
+	private String CONSUMER_KEY = null;
+	private String CONSUMER_SECRET = null;
+	private String CALLBACK_URL=null;
+	private boolean isAuthenticated = false;
 	private CommonsHttpOAuthConsumer consumer;
 
 	private OAuthProvider provider = new DefaultOAuthProvider(
@@ -37,6 +36,12 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 			AUTHORIZE_WEBSITE_URL);
 	HttpClient httpclient = new DefaultHttpClient();
 
+	/**
+	 * 
+	 * @param consumerKey
+	 * @param consumerSecret
+	 * @param callbackUrl
+	 */
 	public ThoundsOAuthConnector(String consumerKey, String consumerSecret,
 			String callbackUrl) {
 		CONSUMER_KEY = consumerKey;
@@ -45,17 +50,53 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 		CALLBACK_URL = callbackUrl;
 	}
 
+	/**
+	 * 
+	 * @return
+	 * @throws OAuthMessageSignerException
+	 * @throws OAuthNotAuthorizedException
+	 * @throws OAuthExpectationFailedException
+	 * @throws OAuthCommunicationException
+	 */
 	public String getAuthenticationUrl() throws OAuthMessageSignerException,
 			OAuthNotAuthorizedException, OAuthExpectationFailedException,
 			OAuthCommunicationException {
 		return provider.retrieveRequestToken(consumer, CALLBACK_URL);
 	}
 
+	/**
+	 * 
+	 * @param verifier
+	 * @throws OAuthMessageSignerException
+	 * @throws OAuthNotAuthorizedException
+	 * @throws OAuthExpectationFailedException
+	 * @throws OAuthCommunicationException
+	 */
 	// verifier parametro oauth_verifier della query
-	public void getAccessToken(String verifier)
+	public void retrieveAccessToken(String verifier)
 			throws OAuthMessageSignerException, OAuthNotAuthorizedException,
 			OAuthExpectationFailedException, OAuthCommunicationException {
 		provider.retrieveAccessToken(consumer, verifier);
+		isAuthenticated = true;
+	}
+	
+	/**
+	 * 
+	 * @param token
+	 * @param tokenSecret
+	 */
+	public void setAccessToken(String token, String tokenSecret){
+		consumer.setTokenWithSecret(token, tokenSecret);
+		isAuthenticated = true;
+	}
+	
+	/**
+	 * 
+	 */
+	public void logout() {
+		isAuthenticated = false;
+		consumer.setTokenWithSecret(null, null);
+		httpclient.getConnectionManager().shutdown();
 	}
 
 	@Override
@@ -65,8 +106,9 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 			
 			httpclient = new DefaultHttpClient();
 			consumer.sign(request);
-			return httpclient.execute(request);
+			HttpResponse response = httpclient.execute(request);
 			
+			return response;
 		} catch (OAuthMessageSignerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -82,7 +124,7 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 		
 		return null;
 	}
-
+	
 	@Override
 	public HttpResponse executeHttpRequest(HttpUriRequest request)
 			throws ThoundsConnectionException {
@@ -96,8 +138,7 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 
 	@Override
 	public boolean isAuthenticated() {
-		// TODO Auto-generated method stub
-		return false;
+		return isAuthenticated;
 	}
 
 }

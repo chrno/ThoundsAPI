@@ -9,9 +9,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpProtocolParams;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.thounds.thoundsapi.IllegalThoundsObjectException;
 import org.thounds.thoundsapi.ThoundsConnectionException;
 
 public class ThoundsDigestConnector implements ThoundsConnector {
