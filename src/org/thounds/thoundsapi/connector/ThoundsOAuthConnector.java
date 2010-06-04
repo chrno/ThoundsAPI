@@ -141,4 +141,11 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 		return isAuthenticated;
 	}
 
+	public String getToken(){
+		return consumer.getToken();
+	}
+	
+	public String getTokenSecret(){
+		return consumer.getTokenSecret();
+	}
 }

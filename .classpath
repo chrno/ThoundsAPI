@@ -12,6 +12,6 @@
 	<classpathentry kind="lib" path="lib/commons-codec-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/signpost-commonshttp4-1.2.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jsontools-core-1.7-bundle.jar"/>
-	<classpathentry kind="lib" path="/home/chrno/workspace/ThoundsAPI/lib/signpost-core-1.2.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/signpost-core-1.2.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
