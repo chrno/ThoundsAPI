@@ -455,10 +455,12 @@ public class RequestWrapper {
 	 * 
 	 * @param friendshipId
 	 *            Identification code of the friendship request
+	 * @return {@code true} if friendship request ends successfully, {@code
+	 *         false} otherwise
 	 * @throws ThoundsConnectionException
 	 *             in case the connection was aborted
 	 */
-	public static void acceptFriendship(int friendshipId)
+	public static boolean acceptFriendship(int friendshipId)
 			throws ThoundsConnectionException {
 		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
 				+ FRIENDSHIPS_PATH + "/" + Integer.toString(friendshipId)
@@ -469,6 +471,7 @@ public class RequestWrapper {
 
 		@SuppressWarnings("unused")
 		HttpResponse response = executeHttpRequest(httpput, true);
+		return (response.getStatusLine().getStatusCode() == 200);
 	}
 
 	/**
@@ -476,10 +479,12 @@ public class RequestWrapper {
 	 * 
 	 * @param friendshipId
 	 *            Identification code of the friendship request
+	 * @return {@code true} if friendship request ends successfully, {@code
+	 *         false} otherwise
 	 * @throws ThoundsConnectionException
 	 *             in case the connection was aborted
 	 */
-	public static void refuseFriendship(int friendshipId)
+	public static boolean refuseFriendship(int friendshipId)
 			throws ThoundsConnectionException {
 		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
 				+ FRIENDSHIPS_PATH + "/" + Integer.toString(friendshipId));
@@ -487,8 +492,8 @@ public class RequestWrapper {
 		httpput.addHeader("Accept", "application/json");
 		httpput.addHeader("Content-type", "application/json");
 
-		@SuppressWarnings("unused")
 		HttpResponse response = executeHttpRequest(httpput, true);
+		return (response.getStatusLine().getStatusCode() == 200);
 	}
 
 	/**

@@ -5,7 +5,7 @@ import org.json.JSONObject;
 /**
  * 
  */
-public class HomeWrapper {
+public class HomeWrapper implements ThoundsObjectInterface {
 	private JSONObject home;
 
 	/**

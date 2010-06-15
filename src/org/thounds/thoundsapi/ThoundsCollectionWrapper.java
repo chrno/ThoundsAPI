@@ -7,7 +7,7 @@ import org.json.JSONObject;
  * 
  *
  */
-public class ThoundsCollectionWrapper {
+public class ThoundsCollectionWrapper implements ThoundsObjectInterface{
 	JSONObject collection;
 	JSONArray thoundsList;
 

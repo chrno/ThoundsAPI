@@ -6,7 +6,7 @@ import org.json.JSONObject;
  * 
  *
  */
-public class TrackWrapper {
+public class TrackWrapper implements ThoundsObjectInterface{
 
 	private JSONObject track;
 

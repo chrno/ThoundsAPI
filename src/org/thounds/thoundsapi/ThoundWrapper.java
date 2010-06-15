@@ -8,7 +8,7 @@ import org.json.JSONObject;
  * 
  *
  */
-public class ThoundWrapper {
+public class ThoundWrapper implements ThoundsObjectInterface{
 	private JSONObject thound;
 	private JSONArray tracks;
 

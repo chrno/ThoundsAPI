@@ -7,7 +7,7 @@ import org.json.JSONObject;
  * 
  *
  */
-public class BandWrapper{
+public class BandWrapper implements ThoundsObjectInterface {
 	private JSONObject band;
 	private JSONArray friendList;
 
