@@ -9,20 +9,13 @@ import org.json.JSONObject;
 public class TrackWrapper {
 
 	private JSONObject track;
-	private static String[] fieldList = { "cover", "delay", "duration", "host",
-			"id", "offset", "path", "privacy", "tags", "thound_id", "title",
-			"uri", "user_id", "user", "lat", "lng", "created_at" };
 
 	/**
 	 * 
 	 * @param track
-	 * @throws IllegalThoundsObjectException
 	 */
-	public TrackWrapper(JSONObject track) throws IllegalThoundsObjectException {
+	public TrackWrapper(JSONObject track){
 		this.track = track;
-		for (int i = 0; i < fieldList.length; i++)
-			if (!track.has(fieldList[i]))
-				throw new IllegalThoundsObjectException();
 	}
 
 	/**

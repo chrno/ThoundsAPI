@@ -7,18 +7,14 @@ import org.json.JSONObject;
  */
 public class HomeWrapper {
 	private JSONObject home;
-	private static String[] fieldList = { "thounds-collection", "user"};
 
 	/**
 	 * 
 	 * @param home
 	 * @throws IllegalThoundsObjectException 
 	 */
-	public HomeWrapper(JSONObject home) throws IllegalThoundsObjectException {
+	public HomeWrapper(JSONObject home) {
 		this.home = home;
-		for (int i = 0; i < fieldList.length; i++)
-			if (!home.has(fieldList[i]))
-				throw new IllegalThoundsObjectException();
 	}
 
 	/**
