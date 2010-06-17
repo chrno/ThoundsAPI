@@ -282,7 +282,7 @@ public class RequestWrapper {
 			int page, int perPage) throws IllegalThoundsObjectException,
 			ThoundsConnectionException {
 		StringBuilder uriBuilder = new StringBuilder(HOST + USERS_PATH
-				+ LIBRARY_PATH + "/" + Integer.toString(userId));
+				+ "/" + Integer.toString(userId) + LIBRARY_PATH );
 		uriBuilder.append("?page=" + Integer.toString(page));
 		uriBuilder.append("&per_page=" + Integer.toString(perPage));
 
