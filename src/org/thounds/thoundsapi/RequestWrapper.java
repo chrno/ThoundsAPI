@@ -42,6 +42,10 @@ public class RequestWrapper {
 	protected static String USERNAME = "";
 	protected static String PASSWORD = "";
 	private static boolean isLogged = false;
+	
+	public static String PRIVATE = "private";
+	public static String CONTACTS = "contacts";
+	public static String PUBLIC = "public";
 
 	private static HttpResponse executeHttpRequest(HttpUriRequest request,
 			boolean useAuthentication) throws ThoundsConnectionException {
@@ -656,14 +660,16 @@ public class RequestWrapper {
 		HttpResponse response = executeHttpRequest(httppost, false);
 		return (response.getStatusLine().getStatusCode() == 201);
 	}
-
+	
 	/**
 	 * 
-	 * @param title thound's title
+	 * @param title
 	 * @param tags
 	 * @param delay
 	 * @param offset
 	 * @param duration
+	 * @param privacy
+	 * @param bpm
 	 * @param lat
 	 * @param lng
 	 * @param thoundPath
@@ -672,29 +678,36 @@ public class RequestWrapper {
 	 * @throws ThoundsConnectionException
 	 */
 	public static boolean createThound(String title, String tags, int delay,
-			int offset, int duration, double lat, double lng,
+			int offset, int duration, String privacy, int bpm ,
+			double lat, double lng,
 			String thoundPath, String coverPath)
 			throws ThoundsConnectionException {
 
 		JSONObject thoundJSON = new JSONObject();
-		JSONObject thoundFieldJSON = new JSONObject();
+		JSONObject trackFieldJSON = new JSONObject();
+		JSONObject thounds_AttributeJSON = new JSONObject();
 		try {
+			
+			trackFieldJSON.put("title", title);
+			trackFieldJSON.put("tag_list", tags);
+			trackFieldJSON.put("delay", delay);
+			trackFieldJSON.put("offset", offset);
+			trackFieldJSON.put("duration", duration);
+			trackFieldJSON.put("privacy", privacy);
+			thounds_AttributeJSON.put("bpm", bpm);
+			trackFieldJSON.put("thound_attributes", thounds_AttributeJSON);
+			
+			thoundJSON.put("track", trackFieldJSON);
+			thoundJSON.put("lat", lat);
+			thoundJSON.put("lng", lng);
 			String encodedThound = null;
 			String encodedCover = null;
 			if (thoundPath != null && !thoundPath.equals(""))
 				encodedThound = Base64Encoder.Encode(thoundPath);
 			if (coverPath != null && !coverPath.equals(""))
 				encodedCover = Base64Encoder.Encode(coverPath);
-			thoundFieldJSON.put("title", title);
-			thoundFieldJSON.put("tag_list", tags);
-			thoundFieldJSON.put("lat", lat);
-			thoundFieldJSON.put("lng", lng);
-			thoundFieldJSON.put("delay", delay);
-			thoundFieldJSON.put("duration", duration);
-			thoundFieldJSON.put("offset", offset);
-			thoundFieldJSON.put("thoundfile", encodedThound);
-			thoundFieldJSON.put("coverfile", encodedCover);
-			thoundJSON.put("track", thoundFieldJSON);
+			thoundJSON.put("thoundfile", encodedThound);
+			thoundJSON.put("coverfile", encodedCover);
 		} catch (JSONException e) {
 			throw new RuntimeException("user JSONObject creation error");
 		} catch (IOException e) {
@@ -726,6 +739,8 @@ public class RequestWrapper {
 	 * @param delay
 	 * @param offset
 	 * @param duration
+	 * @param privacy
+	 * @param bpm
 	 * @param lat
 	 * @param lng
 	 * @param thoundPath
@@ -733,30 +748,36 @@ public class RequestWrapper {
 	 * @return
 	 * @throws ThoundsConnectionException
 	 */
-	public static boolean createTrack(int thound_id, String title, String tags,
-			int delay, int offset, int duration, double lat, double lng,
+	public static boolean createTrack(int thound_id, String title, String tags, int delay,
+			int offset, int duration, String privacy, int bpm ,
+			double lat, double lng,
 			String thoundPath, String coverPath)
 			throws ThoundsConnectionException {
 
 		JSONObject thoundJSON = new JSONObject();
-		JSONObject thoundFieldJSON = new JSONObject();
+		JSONObject trackFieldJSON = new JSONObject();
+		JSONObject thounds_AttributeJSON = new JSONObject();
 		try {
+			
+			trackFieldJSON.put("title", title);
+			trackFieldJSON.put("tag_list", tags);
+			trackFieldJSON.put("delay", delay);
+			trackFieldJSON.put("offset", offset);
+			trackFieldJSON.put("duration", duration);
+			trackFieldJSON.put("privacy", privacy);
+			thounds_AttributeJSON.put("bpm", bpm);
+			trackFieldJSON.put("thound_attributes", thounds_AttributeJSON);		
+			thoundJSON.put("track", trackFieldJSON);
+			thoundJSON.put("lat", lat);
+			thoundJSON.put("lng", lng);
 			String encodedThound = null;
 			String encodedCover = null;
 			if (thoundPath != null && !thoundPath.equals(""))
 				encodedThound = Base64Encoder.Encode(thoundPath);
 			if (coverPath != null && !coverPath.equals(""))
 				encodedCover = Base64Encoder.Encode(coverPath);
-			thoundFieldJSON.put("title", title);
-			thoundFieldJSON.put("tag_list", tags);
-			thoundFieldJSON.put("lat", lat);
-			thoundFieldJSON.put("lng", lng);
-			thoundFieldJSON.put("delay", delay);
-			thoundFieldJSON.put("duration", duration);
-			thoundFieldJSON.put("offset", offset);
-			thoundFieldJSON.put("thoundfile", encodedThound);
-			thoundFieldJSON.put("coverfile", encodedCover);
-			thoundJSON.put("track", thoundFieldJSON);
+			thoundJSON.put("thoundfile", encodedThound);
+			thoundJSON.put("coverfile", encodedCover);
 		} catch (JSONException e) {
 			throw new RuntimeException("user JSONObject creation error");
 		} catch (IOException e) {
