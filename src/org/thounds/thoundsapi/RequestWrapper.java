@@ -42,7 +42,7 @@ public class RequestWrapper {
 	protected static String USERNAME = "";
 	protected static String PASSWORD = "";
 	private static boolean isLogged = false;
-	
+
 	public static String PRIVATE = "private";
 	public static String CONTACTS = "contacts";
 	public static String PUBLIC = "public";
@@ -285,8 +285,8 @@ public class RequestWrapper {
 	public static ThoundsCollectionWrapper loadGenericUserLibrary(int userId,
 			int page, int perPage) throws IllegalThoundsObjectException,
 			ThoundsConnectionException {
-		StringBuilder uriBuilder = new StringBuilder(HOST + USERS_PATH
-				+ "/" + Integer.toString(userId)+ LIBRARY_PATH );
+		StringBuilder uriBuilder = new StringBuilder(HOST + USERS_PATH + "/"
+				+ Integer.toString(userId) + LIBRARY_PATH);
 		uriBuilder.append("?page=" + Integer.toString(page));
 		uriBuilder.append("&per_page=" + Integer.toString(perPage));
 
@@ -660,7 +660,7 @@ public class RequestWrapper {
 		HttpResponse response = executeHttpRequest(httppost, false);
 		return (response.getStatusLine().getStatusCode() == 201);
 	}
-	
+
 	/**
 	 * 
 	 * @param title
@@ -678,28 +678,30 @@ public class RequestWrapper {
 	 * @throws ThoundsConnectionException
 	 */
 	public static boolean createThound(String title, String tags, int delay,
-			int offset, int duration, String privacy, int bpm ,
-			double lat, double lng,
-			String thoundPath, String coverPath)
+			int offset, int duration, String privacy, Integer bpm, Double lat,
+			Double lng, String thoundPath, String coverPath)
 			throws ThoundsConnectionException {
 
 		JSONObject thoundJSON = new JSONObject();
 		JSONObject trackFieldJSON = new JSONObject();
 		JSONObject thounds_AttributeJSON = new JSONObject();
 		try {
-			
+
 			trackFieldJSON.put("title", title);
 			trackFieldJSON.put("tag_list", tags);
 			trackFieldJSON.put("delay", delay);
 			trackFieldJSON.put("offset", offset);
 			trackFieldJSON.put("duration", duration);
 			trackFieldJSON.put("privacy", privacy);
-			thounds_AttributeJSON.put("bpm", bpm);
-			trackFieldJSON.put("thound_attributes", thounds_AttributeJSON);
-			
+			if (bpm != null) {
+				thounds_AttributeJSON.put("bpm", bpm);
+				trackFieldJSON.put("thound_attributes", thounds_AttributeJSON);
+			}
 			thoundJSON.put("track", trackFieldJSON);
-			thoundJSON.put("lat", lat);
-			thoundJSON.put("lng", lng);
+			if (lat != null)
+				thoundJSON.put("lat", lat);
+			if (lng != null)
+				thoundJSON.put("lng", lng);
 			String encodedThound = null;
 			String encodedCover = null;
 			if (thoundPath != null && !thoundPath.equals(""))
@@ -714,7 +716,6 @@ public class RequestWrapper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		StringBuilder uriBuilder = new StringBuilder(HOST + TRACK_PATH);
 		HttpPost httppost = new HttpPost(uriBuilder.toString());
 		httppost.addHeader("Accept", "application/json");
@@ -748,28 +749,31 @@ public class RequestWrapper {
 	 * @return
 	 * @throws ThoundsConnectionException
 	 */
-	public static boolean createTrack(int thound_id, String title, String tags, int delay,
-			int offset, int duration, String privacy, int bpm ,
-			double lat, double lng,
-			String thoundPath, String coverPath)
+	public static boolean createTrack(int thound_id, String title, String tags,
+			int delay, int offset, int duration, String privacy, Integer bpm,
+			Double lat, Double lng, String thoundPath, String coverPath)
 			throws ThoundsConnectionException {
 
 		JSONObject thoundJSON = new JSONObject();
 		JSONObject trackFieldJSON = new JSONObject();
 		JSONObject thounds_AttributeJSON = new JSONObject();
 		try {
-			
+
 			trackFieldJSON.put("title", title);
 			trackFieldJSON.put("tag_list", tags);
 			trackFieldJSON.put("delay", delay);
 			trackFieldJSON.put("offset", offset);
 			trackFieldJSON.put("duration", duration);
 			trackFieldJSON.put("privacy", privacy);
-			thounds_AttributeJSON.put("bpm", bpm);
-			trackFieldJSON.put("thound_attributes", thounds_AttributeJSON);		
+			if (bpm != null) {
+				thounds_AttributeJSON.put("bpm", bpm);
+				trackFieldJSON.put("thound_attributes", thounds_AttributeJSON);
+			}
 			thoundJSON.put("track", trackFieldJSON);
-			thoundJSON.put("lat", lat);
-			thoundJSON.put("lng", lng);
+			if (lat != null)
+				thoundJSON.put("lat", lat);
+			if (lng != null)
+				thoundJSON.put("lng", lng);
 			String encodedThound = null;
 			String encodedCover = null;
 			if (thoundPath != null && !thoundPath.equals(""))
@@ -810,8 +814,8 @@ public class RequestWrapper {
 	 */
 	public static boolean removeTrackNotification(int thoundId)
 			throws ThoundsConnectionException {
-		StringBuilder uriBuilder = new StringBuilder(HOST + TRACK_NOTIFICATIONS_PATH + "/"
-				+ Integer.toString(thoundId));
+		StringBuilder uriBuilder = new StringBuilder(HOST
+				+ TRACK_NOTIFICATIONS_PATH + "/" + Integer.toString(thoundId));
 		HttpDelete httpdelete = new HttpDelete(uriBuilder.toString());
 		httpdelete.addHeader("Accept", "application/json");
 		httpdelete.addHeader("Content-type", "application/json");
