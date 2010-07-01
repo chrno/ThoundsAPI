@@ -473,7 +473,6 @@ public class RequestWrapper {
 		httpput.addHeader("Accept", "application/json");
 		httpput.addHeader("Content-type", "application/json");
 
-		@SuppressWarnings("unused")
 		HttpResponse response = executeHttpRequest(httpput, true);
 		return (response.getStatusLine().getStatusCode() == 200);
 	}
@@ -662,19 +661,21 @@ public class RequestWrapper {
 	}
 
 	/**
+	 * Method to create a new thound.
 	 * 
-	 * @param title
-	 * @param tags
-	 * @param delay
-	 * @param offset
-	 * @param duration
-	 * @param privacy
-	 * @param bpm
-	 * @param lat
-	 * @param lng
-	 * @param thoundPath
-	 * @param coverPath
-	 * @return
+	 * @param title Thound's title
+	 * @param tags list of tags associated to the thound (instrument, genre, etc.)
+	 * @param delay audio file start delay in milliseconds (used to sync tracks)
+	 * @param offset audio file start offset in milliseconds (used to trim tracks)
+	 * @param duration audio file duration in milliseconds (used to trim tracks)
+	 * @param privacy privacy level (one of private, contacts or public)
+	 * @param bpm beats per minute
+	 * @param lat latitude in degrees
+	 * @param lng longitude in degrees
+	 * @param thoundPath thound's file path
+	 * @param coverPath thound's cover file path 
+	 * @return {@code true} if request end successfully, {@code
+	 *         false} otherwise
 	 * @throws ThoundsConnectionException
 	 */
 	public static boolean createThound(String title, String tags, int delay,
@@ -697,19 +698,20 @@ public class RequestWrapper {
 				thounds_AttributeJSON.put("bpm", bpm);
 				trackFieldJSON.put("thound_attributes", thounds_AttributeJSON);
 			}
-			thoundJSON.put("track", trackFieldJSON);
 			if (lat != null)
-				thoundJSON.put("lat", lat);
+				trackFieldJSON.put("lat", lat);
 			if (lng != null)
-				thoundJSON.put("lng", lng);
+				trackFieldJSON.put("lng", lng);
 			String encodedThound = null;
 			String encodedCover = null;
 			if (thoundPath != null && !thoundPath.equals(""))
 				encodedThound = Base64Encoder.Encode(thoundPath);
 			if (coverPath != null && !coverPath.equals(""))
 				encodedCover = Base64Encoder.Encode(coverPath);
-			thoundJSON.put("thoundfile", encodedThound);
-			thoundJSON.put("coverfile", encodedCover);
+			trackFieldJSON.put("thoundfile", encodedThound);
+			trackFieldJSON.put("coverfile", encodedCover);
+			thoundJSON.put("track", trackFieldJSON);
+			
 		} catch (JSONException e) {
 			throw new RuntimeException("user JSONObject creation error");
 		} catch (IOException e) {
@@ -732,21 +734,24 @@ public class RequestWrapper {
 		return (response.getStatusLine().getStatusCode() == 201);
 	}
 
+
 	/**
+	 * Method to add new track on an existing thound.
 	 * 
-	 * @param thound_id
-	 * @param title
-	 * @param tags
-	 * @param delay
-	 * @param offset
-	 * @param duration
-	 * @param privacy
-	 * @param bpm
-	 * @param lat
-	 * @param lng
-	 * @param thoundPath
-	 * @param coverPath
-	 * @return
+	 * @param thound_id id to add a new track (a new line) on an existing thound
+	 * @param title Thound's title
+	 * @param tags list of tags associated to the thound (instrument, genre, etc.)
+	 * @param delay audio file start delay in milliseconds (used to sync tracks)
+	 * @param offset audio file start offset in milliseconds (used to trim tracks)
+	 * @param duration audio file duration in milliseconds (used to trim tracks)
+	 * @param privacy privacy level (one of private, contacts or public)
+	 * @param bpm beats per minute.
+	 * @param lat latitude in degrees. Can be null. 
+	 * @param lng longitude in degrees. Can be null.
+	 * @param thoundPath thound's file path
+	 * @param coverPath thound's cover file path. Can be null; 
+	 * @return {@code true} if request end successfully, {@code
+	 *         false} otherwise
 	 * @throws ThoundsConnectionException
 	 */
 	public static boolean createTrack(int thound_id, String title, String tags,
@@ -769,19 +774,19 @@ public class RequestWrapper {
 				thounds_AttributeJSON.put("bpm", bpm);
 				trackFieldJSON.put("thound_attributes", thounds_AttributeJSON);
 			}
-			thoundJSON.put("track", trackFieldJSON);
 			if (lat != null)
-				thoundJSON.put("lat", lat);
+				trackFieldJSON.put("lat", lat);
 			if (lng != null)
-				thoundJSON.put("lng", lng);
+				trackFieldJSON.put("lng", lng);
 			String encodedThound = null;
 			String encodedCover = null;
 			if (thoundPath != null && !thoundPath.equals(""))
 				encodedThound = Base64Encoder.Encode(thoundPath);
 			if (coverPath != null && !coverPath.equals(""))
 				encodedCover = Base64Encoder.Encode(coverPath);
-			thoundJSON.put("thoundfile", encodedThound);
-			thoundJSON.put("coverfile", encodedCover);
+			trackFieldJSON.put("thoundfile", encodedThound);
+			trackFieldJSON.put("coverfile", encodedCover);
+			thoundJSON.put("track", trackFieldJSON);
 		} catch (JSONException e) {
 			throw new RuntimeException("user JSONObject creation error");
 		} catch (IOException e) {
@@ -822,5 +827,37 @@ public class RequestWrapper {
 
 		HttpResponse response = executeHttpRequest(httpdelete, true);
 		return (response.getStatusLine().getStatusCode() == 200);
+	}
+	
+	/**
+	 * 
+	 * @param query
+	 * @param page
+	 * @param perPage
+	 * @return
+	 * @throws ThoundsConnectionException
+	 * @throws IllegalThoundsObjectException
+	 */
+	public static UsersCollectionWrapper search(String[] query, int page, int perPage) throws ThoundsConnectionException, IllegalThoundsObjectException{
+		StringBuilder uriBuilder = new StringBuilder(HOST + USERS_PATH);
+		uriBuilder.append("?page=" + Integer.toString(page));
+		uriBuilder.append("&per_page=" + Integer.toString(perPage));
+
+		if(query!=null && query.length > 0){
+			uriBuilder.append("&query=" + query[0]);
+			for(int i=1; i < query.length; i++)
+				uriBuilder.append("+" + query[i]);
+		}
+		
+		HttpGet httpget = new HttpGet(uriBuilder.toString());
+		httpget.addHeader("Accept", "application/json");
+		HttpResponse response;
+		try {
+			response = executeHttpRequest(httpget, true);
+			return new UsersCollectionWrapper(httpResponseToJSONObject(
+					response).getJSONObject("thounds-collection"));
+		} catch (JSONException e) {
+			throw new IllegalThoundsObjectException();
+		}
 	}
 }
