@@ -24,7 +24,7 @@ import org.thounds.thoundsapi.utils.Base64Encoder;
  * between a Java application and Thounds
  */
 
-public class RequestWrapper {
+public class Thounds {
 	// private static String STAGE_HOST_PATH = "http://stage.thounds.com";
 	private static String HOST = "http://thounds.com";
 	private static String PROFILE_PATH = "/profile";
@@ -704,12 +704,15 @@ public class RequestWrapper {
 				trackFieldJSON.put("lng", lng);
 			String encodedThound = null;
 			String encodedCover = null;
-			if (thoundPath != null && !thoundPath.equals(""))
+			if (thoundPath != null && !thoundPath.equals("")){
 				encodedThound = Base64Encoder.Encode(thoundPath);
-			if (coverPath != null && !coverPath.equals(""))
+				System.out.println("encodedthound: " + encodedThound);
+				trackFieldJSON.put("thoundfile", encodedThound);
+			}
+			if (coverPath != null && !coverPath.equals("")){
 				encodedCover = Base64Encoder.Encode(coverPath);
-			trackFieldJSON.put("thoundfile", encodedThound);
 			trackFieldJSON.put("coverfile", encodedCover);
+			}
 			thoundJSON.put("track", trackFieldJSON);
 			
 		} catch (JSONException e) {
@@ -780,12 +783,15 @@ public class RequestWrapper {
 				trackFieldJSON.put("lng", lng);
 			String encodedThound = null;
 			String encodedCover = null;
-			if (thoundPath != null && !thoundPath.equals(""))
+			if (thoundPath != null && !thoundPath.equals("")){
 				encodedThound = Base64Encoder.Encode(thoundPath);
-			if (coverPath != null && !coverPath.equals(""))
+				System.out.println("encodedthound: " + encodedThound);
+				trackFieldJSON.put("thoundfile", encodedThound);
+			}
+			if (coverPath != null && !coverPath.equals("")){
 				encodedCover = Base64Encoder.Encode(coverPath);
-			trackFieldJSON.put("thoundfile", encodedThound);
-			trackFieldJSON.put("coverfile", encodedCover);
+				trackFieldJSON.put("coverfile", encodedCover);
+			}
 			thoundJSON.put("track", trackFieldJSON);
 		} catch (JSONException e) {
 			throw new RuntimeException("user JSONObject creation error");
