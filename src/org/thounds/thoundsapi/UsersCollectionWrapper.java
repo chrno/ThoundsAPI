@@ -3,21 +3,18 @@ package org.thounds.thoundsapi;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-/**
- * 
- *
- */
-public class ThoundsCollectionWrapper implements ThoundsObjectInterface{
+public class UsersCollectionWrapper implements ThoundsObjectInterface {
+
 	JSONObject collection;
-	JSONArray thoundsList;
+	JSONArray usersList;
 
 	/**
 	 * 
 	 * @param collection
 	 */
-	public ThoundsCollectionWrapper(JSONObject collection){
+	public UsersCollectionWrapper(JSONObject collection){
 		this.collection = collection;
-		thoundsList = collection.optJSONArray("thounds");
+		usersList = collection.optJSONArray("users");
 	}
 
 	/**
@@ -32,7 +29,7 @@ public class ThoundsCollectionWrapper implements ThoundsObjectInterface{
 	 * 
 	 * @return
 	 */
-	public int getThoundsTotalNumber() {
+	public int getusersTotalNumber() {
 		return collection.optInt("total");
 	}
 
@@ -48,9 +45,9 @@ public class ThoundsCollectionWrapper implements ThoundsObjectInterface{
 	 * 
 	 * @return
 	 */
-	public int getThoundsListLength() {
-		if (thoundsList != null) {
-			return thoundsList.length();
+	public int getUsersListLength() {
+		if (usersList != null) {
+			return usersList.length();
 		}
 		return 0;
 	}
@@ -61,12 +58,12 @@ public class ThoundsCollectionWrapper implements ThoundsObjectInterface{
 	 * @return
 	 * @throws IllegalThoundsObjectException
 	 */
-	public ThoundWrapper getThounds(int index)
+	public UserWrapper getUsers(int index)
 			throws IllegalThoundsObjectException {
-		JSONObject thound;
-		thound = thoundsList.optJSONObject(index);
-		if (thound != null)
-			return new ThoundWrapper(thound);
+		JSONObject user;
+		user = usersList.optJSONObject(index);
+		if (user != null)
+			return new UserWrapper(user);
 		return null;
 	}
 
@@ -75,11 +72,12 @@ public class ThoundsCollectionWrapper implements ThoundsObjectInterface{
 	 * @return
 	 * @throws IllegalThoundsObjectException
 	 */
-	public ThoundWrapper[] getThoundsList()
+	public UserWrapper[] getUsersList()
 			throws IllegalThoundsObjectException {
-		ThoundWrapper[] thoundsList = new ThoundWrapper[getThoundsListLength()];
-		for (int i = 0; i < getThoundsListLength(); i++)
-			thoundsList[i] = getThounds(i);
-		return thoundsList;
+		UserWrapper[] usersList = new UserWrapper[getUsersListLength()];
+		for (int i = 0; i < getUsersListLength(); i++)
+			usersList[i] = getUsers(i);
+		return usersList;
 	}
+	
 }

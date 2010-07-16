@@ -2,9 +2,9 @@ package org.thounds.thoundsapi;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -26,9 +26,9 @@ import org.thounds.thoundsapi.utils.Base64Encoder;
  * between a Java application and Thounds
  */
 
-public class RequestWrapper {
+public class Thounds {
 	// private static String STAGE_HOST_PATH = "http://stage.thounds.com";
-	private static String HOST = "http://stage.thounds.com";
+	private static String HOST = "http://thounds.com";
 	private static String PROFILE_PATH = "/profile";
 	private static String HOME_PATH = "/home";
 	private static String USERS_PATH = "/users";
@@ -39,40 +39,14 @@ public class RequestWrapper {
 	private static String LIBRARY_PATH = "/library";
 	private static String NOTIFICATIONS_PATH = "/notifications";
 	private static String TRACK_NOTIFICATIONS_PATH = "/tracks_notifications";
-	private static DefaultHttpClient httpclient = null;
 	private static ThoundsConnector connector = null;
 
-	/*
-	 * protected static String USERNAME = ""; protected static String PASSWORD =
-	 * ""; private static boolean isLogged = false;
-	 */
-/*
-	private static HttpResponse executeHttpRequest(HttpUriRequest request,
-			boolean useAuthentication) throws ThoundsConnectionException {
-		if (httpclient == null)
-			httpclient = new DefaultHttpClient();
-
-		HttpProtocolParams.setUseExpectContinue(httpclient.getParams(), false);
-		if (useAuthentication && !isLogged) {
-			httpclient.getCredentialsProvider().setCredentials(
-					new AuthScope(null, 80, "thounds", "Digest"),
-					new UsernamePasswordCredentials(USERNAME, PASSWORD));
-		}
-		HttpResponse responce = null;
-		try {
-			responce = httpclient.execute(request); // client.getConnectionManager().shutdown();
-		} catch (IOException e) {
-			throw new ThoundsConnectionException();
-		}
-		return responce;
-	}
-*/
 	private static JSONObject httpResponseToJSONObject(HttpResponse response)
 			throws IllegalThoundsObjectException {
-		BufferedReader in=null;
-		String result=null;
+		BufferedReader in;
 		try {
-			in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			in = new BufferedReader(new InputStreamReader(response.getEntity()
+					.getContent()));
 
 			StringBuffer sb = new StringBuffer("");
 			String line = "";
@@ -82,11 +56,9 @@ public class RequestWrapper {
 			}
 			in.close();
 
-			result = sb.toString();
-			System.out.println("------------"+result);
+			String result = sb.toString();
 			return new JSONObject(result);
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new IllegalThoundsObjectException();
 		}
 	}
@@ -98,45 +70,7 @@ public class RequestWrapper {
 	public static ThoundsConnector getConnector() {
 		return connector;
 	}
-	
-	/*
-	 * /** Thounds login method.
-	 * 
-	 * @param username is the mail address of an active Thounds user
-	 * 
-	 * @param password is the password associated to the user
-	 * 
-	 * @return {@code true} for successfull login, {@code false} otherwise
-	 * 
-	 * @throws ThoundsConnectionException in case the connection was aborted
-	 */
-	/*
-	 * public static boolean login(String username, String password) throws
-	 * ThoundsConnectionException {
-	 * 
-	 * USERNAME = username; PASSWORD = password; JSONObject json; try {
-	 * StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH);
-	 * HttpGet httpget = new HttpGet(uriBuilder.toString());
-	 * httpget.addHeader("Accept", "application/json"); HttpResponse response =
-	 * executeHttpRequest(httpget, true); json =
-	 * httpResponseToJSONObject(response);
-	 * 
-	 * if ((json == null) || (!json.getString("email").equals(username))) {
-	 * USERNAME = ""; PASSWORD = ""; return false; } else { //
-	 * Log.d("EMAIL",json.getString("email") ); //
-	 * Log.d("CODE",response.getStatusLine().toString()); isLogged = true;
-	 * return true; } } catch (JSONException e) {
-	 * System.out.println("LOGIN: Catch JSONException"); } catch
-	 * (IllegalThoundsObjectException e) {
-	 * System.out.println("LOGIN: Catch IllegalThoundsObjectException"); }
-	 * return false; }
-	 * 
-	 * /** Thounds logout method.
-	 */
-	/*
-	 * public static void logout() { USERNAME = ""; PASSWORD = ""; isLogged =
-	 * false; httpclient.getConnectionManager().shutdown(); httpclient = null; }
-	 */
+
 	/**
 	 * Return {@code true} if authentication credentials are set.
 	 * 
@@ -146,6 +80,7 @@ public class RequestWrapper {
 	public static boolean isLogged() {
 		return connector.isAuthenticated();
 	}
+
 
 	/**
 	 * Method for retrieve the current user's informations. Require login.
@@ -161,8 +96,7 @@ public class RequestWrapper {
 		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH);
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
 		httpget.addHeader("Accept", "application/json");
-		HttpResponse response = connector
-				.executeAuthenticatedHttpRequest(httpget);
+		HttpResponse response = connector.executeAuthenticatedHttpRequest(httpget);
 		return new UserWrapper(httpResponseToJSONObject(response));
 	}
 
@@ -187,8 +121,7 @@ public class RequestWrapper {
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
 		httpget.addHeader("Accept", "application/json");
 
-		HttpResponse response = connector
-				.executeAuthenticatedHttpRequest(httpget);
+		HttpResponse response = connector.executeAuthenticatedHttpRequest(httpget);
 		return new UserWrapper(httpResponseToJSONObject(response));
 
 	}
@@ -281,16 +214,15 @@ public class RequestWrapper {
 	public static ThoundsCollectionWrapper loadGenericUserLibrary(int userId,
 			int page, int perPage) throws IllegalThoundsObjectException,
 			ThoundsConnectionException {
-		StringBuilder uriBuilder = new StringBuilder(HOST + USERS_PATH
-				+ "/" + Integer.toString(userId) + LIBRARY_PATH );
+		StringBuilder uriBuilder = new StringBuilder(HOST + USERS_PATH + "/"
+				+ Integer.toString(userId) + LIBRARY_PATH);
 		uriBuilder.append("?page=" + Integer.toString(page));
 		uriBuilder.append("&per_page=" + Integer.toString(perPage));
 
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
 		httpget.addHeader("Accept", "application/json");
 		try {
-			HttpResponse response = connector
-					.executeAuthenticatedHttpRequest(httpget);
+			HttpResponse response = connector.executeAuthenticatedHttpRequest(httpget);
 			return new ThoundsCollectionWrapper(httpResponseToJSONObject(
 					response).getJSONObject("thounds-collection"));
 		} catch (JSONException e) {
@@ -339,8 +271,7 @@ public class RequestWrapper {
 
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
 		httpget.addHeader("Accept", "application/json");
-		HttpResponse response = connector
-				.executeAuthenticatedHttpRequest(httpget);
+		HttpResponse response = connector.executeAuthenticatedHttpRequest(httpget);
 		return new BandWrapper(httpResponseToJSONObject(response));
 	}
 
@@ -386,8 +317,7 @@ public class RequestWrapper {
 
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
 		httpget.addHeader("Accept", "application/json");
-		HttpResponse response = connector
-				.executeAuthenticatedHttpRequest(httpget);
+		HttpResponse response = connector.executeAuthenticatedHttpRequest(httpget);
 		return new BandWrapper(httpResponseToJSONObject(response));
 	}
 
@@ -429,8 +359,7 @@ public class RequestWrapper {
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
 		httpget.addHeader("Accept", "application/json");
 
-		HttpResponse response = connector
-				.executeAuthenticatedHttpRequest(httpget);
+		HttpResponse response = connector.executeAuthenticatedHttpRequest(httpget);
 		return new HomeWrapper(httpResponseToJSONObject(response));
 	}
 
@@ -450,8 +379,7 @@ public class RequestWrapper {
 				+ Integer.toString(userId) + FRIENDSHIPS_PATH);
 		HttpPost httppost = new HttpPost(uriBuilder.toString());
 		httppost.addHeader("Accept", "application/json");
-		HttpResponse response = connector
-				.executeAuthenticatedHttpRequest(httppost);
+		HttpResponse response = connector.executeAuthenticatedHttpRequest(httppost);
 		return (response.getStatusLine().getStatusCode() == 201);
 	}
 
@@ -460,10 +388,12 @@ public class RequestWrapper {
 	 * 
 	 * @param friendshipId
 	 *            Identification code of the friendship request
+	 * @return {@code true} if friendship request ends successfully, {@code
+	 *         false} otherwise
 	 * @throws ThoundsConnectionException
 	 *             in case the connection was aborted
 	 */
-	public static void acceptFriendship(int friendshipId)
+	public static boolean acceptFriendship(int friendshipId)
 			throws ThoundsConnectionException {
 		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
 				+ FRIENDSHIPS_PATH + "/" + Integer.toString(friendshipId)
@@ -472,9 +402,8 @@ public class RequestWrapper {
 		httpput.addHeader("Accept", "application/json");
 		httpput.addHeader("Content-type", "application/json");
 
-		@SuppressWarnings("unused")
-		HttpResponse response = connector
-				.executeAuthenticatedHttpRequest(httpput);
+		HttpResponse response = connector.executeAuthenticatedHttpRequest(httpput);
+		return (response.getStatusLine().getStatusCode() == 200);
 	}
 
 	/**
@@ -482,10 +411,12 @@ public class RequestWrapper {
 	 * 
 	 * @param friendshipId
 	 *            Identification code of the friendship request
+	 * @return {@code true} if friendship request ends successfully, {@code
+	 *         false} otherwise
 	 * @throws ThoundsConnectionException
 	 *             in case the connection was aborted
 	 */
-	public static void refuseFriendship(int friendshipId)
+	public static boolean refuseFriendship(int friendshipId)
 			throws ThoundsConnectionException {
 		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
 				+ FRIENDSHIPS_PATH + "/" + Integer.toString(friendshipId));
@@ -493,9 +424,8 @@ public class RequestWrapper {
 		httpput.addHeader("Accept", "application/json");
 		httpput.addHeader("Content-type", "application/json");
 
-		@SuppressWarnings("unused")
-		HttpResponse response = connector
-				.executeAuthenticatedHttpRequest(httpput);
+		HttpResponse response = connector.executeAuthenticatedHttpRequest(httpput);
+		return (response.getStatusLine().getStatusCode() == 200);
 	}
 
 	/**
@@ -516,8 +446,7 @@ public class RequestWrapper {
 		httpdelete.addHeader("Accept", "application/json");
 		httpdelete.addHeader("Content-type", "application/json");
 
-		HttpResponse response = connector
-				.executeAuthenticatedHttpRequest(httpdelete);
+		HttpResponse response = connector.executeAuthenticatedHttpRequest(httpdelete);
 		return (response.getStatusLine().getStatusCode() == 200);
 	}
 
@@ -569,7 +498,7 @@ public class RequestWrapper {
 				+ thoundHash);
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
 		httpget.addHeader("Accept", "application/json");
-		HttpResponse response;
+		HttpResponse response; 
 		if (connector.isAuthenticated())
 			response = connector.executeAuthenticatedHttpRequest(httpget);
 		else
@@ -594,8 +523,7 @@ public class RequestWrapper {
 		httpdelete.addHeader("Accept", "application/json");
 		httpdelete.addHeader("Content-type", "application/json");
 
-		HttpResponse response = connector
-				.executeAuthenticatedHttpRequest(httpdelete);
+		HttpResponse response = connector.executeAuthenticatedHttpRequest(httpdelete);
 		return (response.getStatusLine().getStatusCode() == 200);
 	}
 
@@ -615,8 +543,7 @@ public class RequestWrapper {
 				+ NOTIFICATIONS_PATH);
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
 		httpget.addHeader("Accept", "application/json");
-		HttpResponse response = connector
-				.executeAuthenticatedHttpRequest(httpget);
+		HttpResponse response = connector.executeAuthenticatedHttpRequest(httpget);
 		return new NotificationsWrapper(httpResponseToJSONObject(response));
 	}
 
@@ -666,56 +593,71 @@ public class RequestWrapper {
 					"JSONObject to StringEntity conversion error");
 		}
 		httppost.setEntity(se);
-		HttpResponse response = connector.executeHttpRequest(httppost);
+		HttpResponse response = connector.executeAuthenticatedHttpRequest(httppost);
 		return (response.getStatusLine().getStatusCode() == 201);
 	}
 
 	/**
+	 * Method to create a new thound.
 	 * 
-	 * @param title
-	 *            thound's title
-	 * @param tags
-	 * @param delay
-	 * @param offset
-	 * @param duration
-	 * @param lat
-	 * @param lng
-	 * @param thoundPath
-	 * @param coverPath
-	 * @return
+	 * @param title Thound's title
+	 * @param tags list of tags associated to the thound (instrument, genre, etc.)
+	 * @param delay audio file start delay in milliseconds (used to sync tracks)
+	 * @param offset audio file start offset in milliseconds (used to trim tracks)
+	 * @param duration audio file duration in milliseconds (used to trim tracks)
+	 * @param privacy privacy level (one of private, contacts or public)
+	 * @param bpm beats per minute
+	 * @param lat latitude in degrees
+	 * @param lng longitude in degrees
+	 * @param thoundPath thound's file path
+	 * @param coverPath thound's cover file path 
+	 * @return {@code true} if request end successfully, {@code
+	 *         false} otherwise
 	 * @throws ThoundsConnectionException
 	 */
 	public static boolean createThound(String title, String tags, int delay,
-			int offset, int duration, double lat, double lng,
-			String thoundPath, String coverPath)
+			int offset, int duration, String privacy, Integer bpm, Double lat,
+			Double lng, String thoundPath, String coverPath)
 			throws ThoundsConnectionException {
 
 		JSONObject thoundJSON = new JSONObject();
-		JSONObject thoundFieldJSON = new JSONObject();
+		JSONObject trackFieldJSON = new JSONObject();
+		JSONObject thounds_AttributeJSON = new JSONObject();
 		try {
+
+			trackFieldJSON.put("title", title);
+			trackFieldJSON.put("tag_list", tags);
+			trackFieldJSON.put("delay", delay);
+			trackFieldJSON.put("offset", offset);
+			trackFieldJSON.put("duration", duration);
+			trackFieldJSON.put("privacy", privacy);
+			if (bpm != null) {
+				thounds_AttributeJSON.put("bpm", bpm);
+				trackFieldJSON.put("thound_attributes", thounds_AttributeJSON);
+			}
+			if (lat != null)
+				trackFieldJSON.put("lat", lat);
+			if (lng != null)
+				trackFieldJSON.put("lng", lng);
 			String encodedThound = null;
 			String encodedCover = null;
-			if (thoundPath != null && !thoundPath.equals(""))
+			if (thoundPath != null && !thoundPath.equals("")){
 				encodedThound = Base64Encoder.Encode(thoundPath);
-			if (coverPath != null && !coverPath.equals(""))
+				System.out.println("encodedthound: " + encodedThound);
+				trackFieldJSON.put("thoundfile", encodedThound);
+			}
+			if (coverPath != null && !coverPath.equals("")){
 				encodedCover = Base64Encoder.Encode(coverPath);
-			thoundFieldJSON.put("title", title);
-			thoundFieldJSON.put("tag_list", tags);
-			thoundFieldJSON.put("lat", lat);
-			thoundFieldJSON.put("lng", lng);
-			thoundFieldJSON.put("delay", delay);
-			thoundFieldJSON.put("duration", duration);
-			thoundFieldJSON.put("offset", offset);
-			thoundFieldJSON.put("thoundfile", encodedThound);
-			thoundFieldJSON.put("coverfile", encodedCover);
-			thoundJSON.put("track", thoundFieldJSON);
+			trackFieldJSON.put("coverfile", encodedCover);
+			}
+			thoundJSON.put("track", trackFieldJSON);
+			
 		} catch (JSONException e) {
 			throw new RuntimeException("user JSONObject creation error");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		StringBuilder uriBuilder = new StringBuilder(HOST + TRACK_PATH);
 		HttpPost httppost = new HttpPost(uriBuilder.toString());
 		httppost.addHeader("Accept", "application/json");
@@ -728,50 +670,66 @@ public class RequestWrapper {
 					"JSONObject to StringEntity conversion error");
 		}
 		httppost.setEntity(se);
-		HttpResponse response = connector
-				.executeAuthenticatedHttpRequest(httppost);
+		HttpResponse response = connector.executeAuthenticatedHttpRequest(httppost);
 		return (response.getStatusLine().getStatusCode() == 201);
 	}
 
+
 	/**
+	 * Method to add new track on an existing thound.
 	 * 
-	 * @param thound_id
-	 * @param title
-	 * @param tags
-	 * @param delay
-	 * @param offset
-	 * @param duration
-	 * @param lat
-	 * @param lng
-	 * @param thoundPath
-	 * @param coverPath
-	 * @return
+	 * @param thound_id id to add a new track (a new line) on an existing thound
+	 * @param title Thound's title
+	 * @param tags list of tags associated to the thound (instrument, genre, etc.)
+	 * @param delay audio file start delay in milliseconds (used to sync tracks)
+	 * @param offset audio file start offset in milliseconds (used to trim tracks)
+	 * @param duration audio file duration in milliseconds (used to trim tracks)
+	 * @param privacy privacy level (one of private, contacts or public)
+	 * @param bpm beats per minute.
+	 * @param lat latitude in degrees. Can be null. 
+	 * @param lng longitude in degrees. Can be null.
+	 * @param thoundPath thound's file path
+	 * @param coverPath thound's cover file path. Can be null; 
+	 * @return {@code true} if request end successfully, {@code
+	 *         false} otherwise
 	 * @throws ThoundsConnectionException
 	 */
 	public static boolean createTrack(int thound_id, String title, String tags,
-			int delay, int offset, int duration, double lat, double lng,
-			String thoundPath, String coverPath)
+			int delay, int offset, int duration, String privacy, Integer bpm,
+			Double lat, Double lng, String thoundPath, String coverPath)
 			throws ThoundsConnectionException {
 
 		JSONObject thoundJSON = new JSONObject();
-		JSONObject thoundFieldJSON = new JSONObject();
+		JSONObject trackFieldJSON = new JSONObject();
+		JSONObject thounds_AttributeJSON = new JSONObject();
 		try {
+
+			trackFieldJSON.put("title", title);
+			trackFieldJSON.put("tag_list", tags);
+			trackFieldJSON.put("delay", delay);
+			trackFieldJSON.put("offset", offset);
+			trackFieldJSON.put("duration", duration);
+			trackFieldJSON.put("privacy", privacy);
+			if (bpm != null) {
+				thounds_AttributeJSON.put("bpm", bpm);
+				trackFieldJSON.put("thound_attributes", thounds_AttributeJSON);
+			}
+			if (lat != null)
+				trackFieldJSON.put("lat", lat);
+			if (lng != null)
+				trackFieldJSON.put("lng", lng);
 			String encodedThound = null;
 			String encodedCover = null;
-			if (thoundPath != null && !thoundPath.equals(""))
+			if (thoundPath != null && !thoundPath.equals("")){
 				encodedThound = Base64Encoder.Encode(thoundPath);
-			if (coverPath != null && !coverPath.equals(""))
+				System.out.println("encodedthound: " + encodedThound);
+				trackFieldJSON.put("thoundfile", encodedThound);
+			}
+			if (coverPath != null && !coverPath.equals("")){
 				encodedCover = Base64Encoder.Encode(coverPath);
-			thoundFieldJSON.put("title", title);
-			thoundFieldJSON.put("tag_list", tags);
-			thoundFieldJSON.put("lat", lat);
-			thoundFieldJSON.put("lng", lng);
-			thoundFieldJSON.put("delay", delay);
-			thoundFieldJSON.put("duration", duration);
-			thoundFieldJSON.put("offset", offset);
-			thoundFieldJSON.put("thoundfile", encodedThound);
-			thoundFieldJSON.put("coverfile", encodedCover);
-			thoundJSON.put("track", thoundFieldJSON);
+				trackFieldJSON.put("coverfile", encodedCover);
+			}
+			thoundJSON.put("track", trackFieldJSON);
 		} catch (JSONException e) {
 			throw new RuntimeException("user JSONObject creation error");
 		} catch (IOException e) {
@@ -792,8 +750,7 @@ public class RequestWrapper {
 					"JSONObject to StringEntity conversion error");
 		}
 		httppost.setEntity(se);
-		HttpResponse response = connector
-				.executeAuthenticatedHttpRequest(httppost);
+		HttpResponse response = connector.executeAuthenticatedHttpRequest(httppost);
 		return (response.getStatusLine().getStatusCode() == 201);
 	}
 
@@ -811,8 +768,39 @@ public class RequestWrapper {
 		httpdelete.addHeader("Accept", "application/json");
 		httpdelete.addHeader("Content-type", "application/json");
 
-		HttpResponse response = connector
-				.executeAuthenticatedHttpRequest(httpdelete);
+		HttpResponse response = connector.executeAuthenticatedHttpRequest(httpdelete);
 		return (response.getStatusLine().getStatusCode() == 200);
+	}
+	
+	/**
+	 * 
+	 * @param query
+	 * @param page
+	 * @param perPage
+	 * @return
+	 * @throws ThoundsConnectionException
+	 * @throws IllegalThoundsObjectException
+	 */
+	public static UsersCollectionWrapper search(String[] query, int page, int perPage) throws ThoundsConnectionException, IllegalThoundsObjectException{
+		StringBuilder uriBuilder = new StringBuilder(HOST + USERS_PATH);
+		uriBuilder.append("?page=" + Integer.toString(page));
+		uriBuilder.append("&per_page=" + Integer.toString(perPage));
+
+		if(query!=null && query.length > 0){
+			uriBuilder.append("&query=" + query[0]);
+			for(int i=1; i < query.length; i++)
+				uriBuilder.append("+" + query[i]);
+		}
+		
+		HttpGet httpget = new HttpGet(uriBuilder.toString());
+		httpget.addHeader("Accept", "application/json");
+		HttpResponse response;
+		try {
+			response = connector.executeAuthenticatedHttpRequest(httpget);
+			return new UsersCollectionWrapper(httpResponseToJSONObject(
+					response).getJSONObject("thounds-collection"));
+		} catch (JSONException e) {
+			throw new IllegalThoundsObjectException();
+		}
 	}
 }

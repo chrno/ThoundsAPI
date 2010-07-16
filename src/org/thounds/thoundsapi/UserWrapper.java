@@ -7,7 +7,7 @@ import org.json.JSONObject;
  * 
  *
  */
-public class UserWrapper {
+public class UserWrapper implements ThoundsObjectInterface{
 
 	private JSONObject profile;
 	static private String[] fieldList = { "id", "name", "site_url",

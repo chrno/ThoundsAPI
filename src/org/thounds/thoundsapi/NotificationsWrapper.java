@@ -8,7 +8,7 @@ import org.json.JSONObject;
  * 
  *
  */
-public class NotificationsWrapper {
+public class NotificationsWrapper implements ThoundsObjectInterface{
 	JSONObject notification;
 	JSONArray userList;
 	JSONArray bannedThoundsList;
@@ -46,8 +46,7 @@ public class NotificationsWrapper {
 			throws IllegalThoundsObjectException {
 		JSONObject thound;
 		try {
-			thound = bannedThoundsList.getJSONObject(index).getJSONObject(
-					"thound");
+			thound = bannedThoundsList.getJSONObject(index);
 		} catch (JSONException e) {
 			throw new IllegalThoundsObjectException();
 		}
@@ -90,8 +89,7 @@ public class NotificationsWrapper {
 			throws IllegalThoundsObjectException {
 		JSONObject thound;
 		try {
-			thound = newThoundsList.getJSONObject(index)
-					.getJSONObject("thound");
+			thound = newThoundsList.getJSONObject(index);
 		} catch (JSONException e) {
 			throw new IllegalThoundsObjectException();
 		}
@@ -130,16 +128,18 @@ public class NotificationsWrapper {
 	 * @return
 	 * @throws IllegalThoundsObjectException
 	 */
-	public UserWrapper getBandRequest(int index)
+	public NotificationPair<UserWrapper> getBandRequest(int index)
 			throws IllegalThoundsObjectException {
 		JSONObject thound;
+		int id;
 		try {
 			thound = userList.getJSONObject(index).getJSONObject("user");
+			id = userList.getJSONObject(index).optInt("id");
 		} catch (JSONException e) {
 			throw new IllegalThoundsObjectException();
 		}
 		if (thound != null)
-			return new UserWrapper(thound);
+			return new NotificationPair<UserWrapper>(new UserWrapper(thound), id);
 		return null;
 	}
 
@@ -148,11 +148,12 @@ public class NotificationsWrapper {
 	 * @return
 	 * @throws IllegalThoundsObjectException
 	 */
-	public UserWrapper[] getBandRequestList()
+	@SuppressWarnings("unchecked")
+	public NotificationPair<UserWrapper>[] getBandRequestList()
 			throws IllegalThoundsObjectException {
-		UserWrapper[] bandRequestList = new UserWrapper[getBandRequestListLength()];
+		NotificationPair<?>[] bandRequestList = new NotificationPair<?>[getBandRequestListLength()];
 		for (int i = 0; i < getBandRequestListLength(); i++)
 			bandRequestList[i] = getBandRequest(i);
-		return bandRequestList;
+		return (NotificationPair<UserWrapper>[])bandRequestList;
 	}
 }
