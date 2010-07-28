@@ -10,9 +10,7 @@ import org.json.JSONObject;
 public class UserWrapper implements ThoundsObjectInterface{
 
 	private JSONObject profile;
-	static private String[] fieldList = { "id", "name", "site_url",
-			"city", "country", "about", "avatar", "tags", "default_thound", "created_at" };
-
+	
 	/**
 	 * 
 	 * @param profile
@@ -20,12 +18,6 @@ public class UserWrapper implements ThoundsObjectInterface{
 	 */
 	public UserWrapper(JSONObject profile) throws IllegalThoundsObjectException {
 		this.profile = profile;
-		/*for (int i = 0; i < fieldList.length; i++)
-			if (!profile.has(fieldList[i])){
-				System.out.println(fieldList[i]);
-				System.out.println(i);
-				throw new IllegalThoundsObjectException();
-			}*/
 	}
 
 	/**

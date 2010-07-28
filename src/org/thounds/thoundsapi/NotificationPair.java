@@ -1,5 +1,7 @@
 package org.thounds.thoundsapi;
-
+/**
+ * 
+ */
 public class NotificationPair <T extends ThoundsObjectInterface>{
 
 	private T obj;
@@ -22,7 +24,7 @@ public class NotificationPair <T extends ThoundsObjectInterface>{
 		this.obj = obj;
 	}
 	
-	public void getNotificationId(int id){
+	public void setNotificationId(int id){
 		this.id = id;
 	}
 }

@@ -27,7 +27,6 @@ import org.thounds.thoundsapi.utils.Base64Encoder;
  */
 
 public class Thounds {
-	// private static String STAGE_HOST_PATH = "http://stage.thounds.com";
 	private static String HOST = "http://thounds.com";
 	private static String PROFILE_PATH = "/profile";
 	private static String HOME_PATH = "/home";
@@ -39,6 +38,9 @@ public class Thounds {
 	private static String LIBRARY_PATH = "/library";
 	private static String NOTIFICATIONS_PATH = "/notifications";
 	private static String TRACK_NOTIFICATIONS_PATH = "/tracks_notifications";
+	public static String PRIVATE = "private";
+	public static String CONTACTS = "contacts";
+	public static String PUBLIC = "public";
 	private static ThoundsConnector connector = null;
 
 	private static JSONObject httpResponseToJSONObject(HttpResponse response)
@@ -63,10 +65,18 @@ public class Thounds {
 		}
 	}
 
+	/**
+	 * Method for set the connector to use to comunicate with Thounds
+	 * @param con a class that implement the {@code ThoundsConnector} interface
+	 */
 	public static void setConnector(ThoundsConnector con) {
 		connector = con;
 	}
 
+	/**
+	 * Method to retrieve the connector
+	 * @return the connector
+	 */
 	public static ThoundsConnector getConnector() {
 		return connector;
 	}
@@ -90,9 +100,10 @@ public class Thounds {
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
 	 *             in case the retrieved object is broken
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static UserWrapper loadUserProfile()
-			throws ThoundsConnectionException, IllegalThoundsObjectException {
+			throws ThoundsConnectionException, IllegalThoundsObjectException, ThoundsNotAuthenticatedexception {
 		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH);
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
 		httpget.addHeader("Accept", "application/json");
@@ -113,9 +124,10 @@ public class Thounds {
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
 	 *             in case the retrieved object is broken
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static UserWrapper loadGenericUserProfile(int userId)
-			throws ThoundsConnectionException, IllegalThoundsObjectException {
+			throws ThoundsConnectionException, IllegalThoundsObjectException, ThoundsNotAuthenticatedexception {
 		StringBuilder uriBuilder = new StringBuilder(HOST + USERS_PATH + "/"
 				+ Integer.toString(userId));
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
@@ -135,9 +147,10 @@ public class Thounds {
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
 	 *             in case the retrieved object is broken
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static ThoundsCollectionWrapper loadUserLibrary()
-			throws IllegalThoundsObjectException, ThoundsConnectionException {
+			throws IllegalThoundsObjectException, ThoundsConnectionException, ThoundsNotAuthenticatedexception {
 		return loadUserLibrary(1, 10);
 	}
 
@@ -154,9 +167,10 @@ public class Thounds {
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
 	 *             in case the retrieved object is broken
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static ThoundsCollectionWrapper loadUserLibrary(int page, int perPage)
-			throws IllegalThoundsObjectException, ThoundsConnectionException {
+			throws IllegalThoundsObjectException, ThoundsConnectionException, ThoundsNotAuthenticatedexception {
 
 		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
 				+ LIBRARY_PATH);
@@ -187,9 +201,10 @@ public class Thounds {
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
 	 *             in case the retrieved object is broken
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static ThoundsCollectionWrapper loadGenericUserLibrary(int userId)
-			throws IllegalThoundsObjectException, ThoundsConnectionException {
+			throws IllegalThoundsObjectException, ThoundsConnectionException, ThoundsNotAuthenticatedexception {
 		return loadGenericUserLibrary(userId, 1, 10);
 	}
 
@@ -210,10 +225,11 @@ public class Thounds {
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
 	 *             in case the retrieved object is broken
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static ThoundsCollectionWrapper loadGenericUserLibrary(int userId,
 			int page, int perPage) throws IllegalThoundsObjectException,
-			ThoundsConnectionException {
+			ThoundsConnectionException, ThoundsNotAuthenticatedexception {
 		StringBuilder uriBuilder = new StringBuilder(HOST + USERS_PATH + "/"
 				+ Integer.toString(userId) + LIBRARY_PATH);
 		uriBuilder.append("?page=" + Integer.toString(page));
@@ -240,9 +256,10 @@ public class Thounds {
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
 	 *             in case the retrieved object is broken
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static BandWrapper loadUserBand() throws ThoundsConnectionException,
-			IllegalThoundsObjectException {
+			IllegalThoundsObjectException, ThoundsNotAuthenticatedexception {
 		return loadUserBand(1, 10);
 	}
 
@@ -260,9 +277,10 @@ public class Thounds {
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
 	 *             in case the retrieved object is broken
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static BandWrapper loadUserBand(int page, int perPage)
-			throws ThoundsConnectionException, IllegalThoundsObjectException {
+			throws ThoundsConnectionException, IllegalThoundsObjectException, ThoundsNotAuthenticatedexception {
 
 		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
 				+ BAND_PATH);
@@ -285,9 +303,10 @@ public class Thounds {
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
 	 *             in case the retrieved object is broken
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static BandWrapper loadGenericUserBand(int userId)
-			throws ThoundsConnectionException, IllegalThoundsObjectException {
+			throws ThoundsConnectionException, IllegalThoundsObjectException, ThoundsNotAuthenticatedexception {
 		return loadGenericUserBand(userId, 1, 10);
 	}
 
@@ -305,10 +324,11 @@ public class Thounds {
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
 	 *             in case the retrieved object is broken
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static BandWrapper loadGenericUserBand(int userId, int page,
 			int perPage) throws ThoundsConnectionException,
-			IllegalThoundsObjectException {
+			IllegalThoundsObjectException, ThoundsNotAuthenticatedexception {
 
 		StringBuilder uriBuilder = new StringBuilder(HOST + USERS_PATH + "/"
 				+ Integer.toString(userId) + BAND_PATH);
@@ -330,9 +350,10 @@ public class Thounds {
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
 	 *             in case the retrieved object is broken
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static HomeWrapper loadHome() throws ThoundsConnectionException,
-			IllegalThoundsObjectException {
+			IllegalThoundsObjectException, ThoundsNotAuthenticatedexception {
 		return loadHome(1, 10);
 	}
 
@@ -349,9 +370,10 @@ public class Thounds {
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
 	 *             in case the retrieved object is broken
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static HomeWrapper loadHome(int page, int perPage)
-			throws ThoundsConnectionException, IllegalThoundsObjectException {
+			throws ThoundsConnectionException, IllegalThoundsObjectException, ThoundsNotAuthenticatedexception {
 		StringBuilder uriBuilder = new StringBuilder(HOST + HOME_PATH);
 		uriBuilder.append("?page=" + Integer.toString(page));
 		uriBuilder.append("&per_page=" + Integer.toString(perPage));
@@ -372,9 +394,10 @@ public class Thounds {
 	 *         false} otherwise
 	 * @throws ThoundsConnectionException
 	 *             in case the connection was aborted
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static boolean friendshipRequest(int userId)
-			throws ThoundsConnectionException {
+			throws ThoundsConnectionException, ThoundsNotAuthenticatedexception {
 		StringBuilder uriBuilder = new StringBuilder(HOST + USERS_PATH + "/"
 				+ Integer.toString(userId) + FRIENDSHIPS_PATH);
 		HttpPost httppost = new HttpPost(uriBuilder.toString());
@@ -392,9 +415,10 @@ public class Thounds {
 	 *         false} otherwise
 	 * @throws ThoundsConnectionException
 	 *             in case the connection was aborted
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static boolean acceptFriendship(int friendshipId)
-			throws ThoundsConnectionException {
+			throws ThoundsConnectionException, ThoundsNotAuthenticatedexception {
 		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
 				+ FRIENDSHIPS_PATH + "/" + Integer.toString(friendshipId)
 				+ "?accept=true");
@@ -415,9 +439,10 @@ public class Thounds {
 	 *         false} otherwise
 	 * @throws ThoundsConnectionException
 	 *             in case the connection was aborted
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static boolean refuseFriendship(int friendshipId)
-			throws ThoundsConnectionException {
+			throws ThoundsConnectionException, ThoundsNotAuthenticatedexception {
 		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
 				+ FRIENDSHIPS_PATH + "/" + Integer.toString(friendshipId));
 		HttpPut httpput = new HttpPut(uriBuilder.toString());
@@ -437,9 +462,10 @@ public class Thounds {
 	 *         otherwise
 	 * @throws ThoundsConnectionException
 	 *             in case the connection was aborted
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static boolean removeUserFromBand(int userId)
-			throws ThoundsConnectionException {
+			throws ThoundsConnectionException, ThoundsNotAuthenticatedexception {
 		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
 				+ FRIENDSHIPS_PATH + "/" + Integer.toString(userId));
 		HttpDelete httpdelete = new HttpDelete(uriBuilder.toString());
@@ -463,9 +489,10 @@ public class Thounds {
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
 	 *             in case the retrieved object is broken
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static ThoundWrapper loadThounds(int thoundId)
-			throws ThoundsConnectionException, IllegalThoundsObjectException {
+			throws ThoundsConnectionException, IllegalThoundsObjectException, ThoundsNotAuthenticatedexception {
 		StringBuilder uriBuilder = new StringBuilder(HOST + THOUNDS_PATH + "/"
 				+ Integer.toString(thoundId));
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
@@ -491,9 +518,10 @@ public class Thounds {
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
 	 *             in case the retrieved object is broken
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static ThoundWrapper loadThounds(String thoundHash)
-			throws ThoundsConnectionException, IllegalThoundsObjectException {
+			throws ThoundsConnectionException, IllegalThoundsObjectException, ThoundsNotAuthenticatedexception {
 		StringBuilder uriBuilder = new StringBuilder(HOST + THOUNDS_PATH + "/"
 				+ thoundHash);
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
@@ -514,9 +542,10 @@ public class Thounds {
 	 *         otherwise
 	 * @throws ThoundsConnectionException
 	 *             in case the connection was aborted
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static boolean removeThound(int thoundId)
-			throws ThoundsConnectionException {
+			throws ThoundsConnectionException, ThoundsNotAuthenticatedexception {
 		StringBuilder uriBuilder = new StringBuilder(HOST + THOUNDS_PATH + "/"
 				+ Integer.toString(thoundId));
 		HttpDelete httpdelete = new HttpDelete(uriBuilder.toString());
@@ -536,9 +565,10 @@ public class Thounds {
 	 *             in case the connection was aborted
 	 * @throws IllegalThoundsObjectException
 	 *             in case the retrieved object is broken
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static NotificationsWrapper loadNotifications()
-			throws ThoundsConnectionException, IllegalThoundsObjectException {
+			throws ThoundsConnectionException, IllegalThoundsObjectException, ThoundsNotAuthenticatedexception {
 		StringBuilder uriBuilder = new StringBuilder(HOST + PROFILE_PATH
 				+ NOTIFICATIONS_PATH);
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
@@ -564,10 +594,11 @@ public class Thounds {
 	 *         false} otherwise
 	 * @throws ThoundsConnectionException
 	 *             in case the connection was aborted
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static boolean registrateUser(String name, String mail,
 			String country, String city, String tags)
-			throws ThoundsConnectionException {
+			throws ThoundsConnectionException, ThoundsNotAuthenticatedexception {
 
 		JSONObject userJSON = new JSONObject();
 		JSONObject userFieldJSON = new JSONObject();
@@ -614,11 +645,12 @@ public class Thounds {
 	 * @return {@code true} if request end successfully, {@code
 	 *         false} otherwise
 	 * @throws ThoundsConnectionException
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static boolean createThound(String title, String tags, int delay,
 			int offset, int duration, String privacy, Integer bpm, Double lat,
 			Double lng, String thoundPath, String coverPath)
-			throws ThoundsConnectionException {
+			throws ThoundsConnectionException, ThoundsNotAuthenticatedexception {
 
 		JSONObject thoundJSON = new JSONObject();
 		JSONObject trackFieldJSON = new JSONObject();
@@ -655,7 +687,6 @@ public class Thounds {
 		} catch (JSONException e) {
 			throw new RuntimeException("user JSONObject creation error");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		StringBuilder uriBuilder = new StringBuilder(HOST + TRACK_PATH);
@@ -693,11 +724,12 @@ public class Thounds {
 	 * @return {@code true} if request end successfully, {@code
 	 *         false} otherwise
 	 * @throws ThoundsConnectionException
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static boolean createTrack(int thound_id, String title, String tags,
 			int delay, int offset, int duration, String privacy, Integer bpm,
 			Double lat, Double lng, String thoundPath, String coverPath)
-			throws ThoundsConnectionException {
+			throws ThoundsConnectionException, ThoundsNotAuthenticatedexception {
 
 		JSONObject thoundJSON = new JSONObject();
 		JSONObject trackFieldJSON = new JSONObject();
@@ -733,7 +765,6 @@ public class Thounds {
 		} catch (JSONException e) {
 			throw new RuntimeException("user JSONObject creation error");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -755,13 +786,16 @@ public class Thounds {
 	}
 
 	/**
+	 * Method to remove a track notification
 	 * 
-	 * @param thoundId
-	 * @return
+	 * @param thoundId thound identifier
+	 * @return {@code true} if request end successfully, {@code
+	 *         false} otherwise
 	 * @throws ThoundsConnectionException
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
 	public static boolean removeTrackNotification(int thoundId)
-			throws ThoundsConnectionException {
+			throws ThoundsConnectionException, ThoundsNotAuthenticatedexception {
 		StringBuilder uriBuilder = new StringBuilder(HOST
 				+ TRACK_NOTIFICATIONS_PATH + "/" + Integer.toString(thoundId));
 		HttpDelete httpdelete = new HttpDelete(uriBuilder.toString());
@@ -773,15 +807,17 @@ public class Thounds {
 	}
 	
 	/**
+	 * Method to search users
 	 * 
-	 * @param query
-	 * @param page
-	 * @param perPage
-	 * @return
+	 * @param query search query
+	 * @param page page number 
+	 * @param perPage number of user to load at time
+	 * @return a UsersCollectionWrapper that contain the search result
 	 * @throws ThoundsConnectionException
 	 * @throws IllegalThoundsObjectException
+	 * @throws ThoundsNotAuthenticatedexception 
 	 */
-	public static UsersCollectionWrapper search(String[] query, int page, int perPage) throws ThoundsConnectionException, IllegalThoundsObjectException{
+	public static UsersCollectionWrapper search(String[] query, int page, int perPage) throws ThoundsConnectionException, IllegalThoundsObjectException, ThoundsNotAuthenticatedexception{
 		StringBuilder uriBuilder = new StringBuilder(HOST + USERS_PATH);
 		uriBuilder.append("?page=" + Integer.toString(page));
 		uriBuilder.append("&per_page=" + Integer.toString(perPage));
