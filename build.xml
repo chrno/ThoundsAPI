@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ThoundsAPI" basedir="." default="all">
+
+	<property environment="env" />
+	<property name="sourcedir" value="${basedir}/src" />
+	<property name="targetdir" value="${basedir}/bin" />
+	<property name="librarydir" value="${basedir}/lib" />
+	<property name="documentdir" value="${basedir}/doc/api" />
+	<property name="distpath" value="${basedir}/dist" />
+
+	<!-- project settings -->
+	<property name="project.title" value="ThoundsAPI" />
+	<property name="project.distname" value="ThoundsAPI" />
+	<property name="project.version" value="0.3" />
+
+	<!-- classpath -->
+	<path id="compile.classpath">
+		<fileset dir="${librarydir}">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement path="${targetdir}" />
+	</path>
+
+	<!-- TARGETS -->
+	<target name="clean">
+		<delete dir="${targetdir}" />
+		<mkdir dir="${targetdir}" />
+	</target>
+
+	<!-- check timestamp on files -->
+	<target name="prepare">
+		<tstamp />
+	</target>
+
+	<target name="copy-resources">
+		<copy todir="${targetdir}">
+			<fileset dir="${sourcedir}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="compile" depends="clean, prepare, copy-resources">
+		<javac srcdir="${sourcedir}" destdir="${targetdir}">
+			<classpath refid="compile.classpath" />
+		</javac>
+	</target>
+
+<!--	<target name="run" depends="compile">-->
+<!--		<java fork="true" classname="org.potomak.Main" classpathref="compile.classpath">-->
+<!--			<classpath path="${targetdir}" />-->
+<!--			<arg value="${action}" />-->
+<!--		</java>-->
+<!--	</target>-->
+
+	<!--  Build Javadoc documentation -->
+	<target name="javadoc" description="Generate JavaDoc API docs">
+		<delete dir="${documentdir}" />
+		<mkdir dir="${documentdir}" />
+		<javadoc sourcepath="${sourcedir}" destdir="${documentdir}"
+			packagenames="*" author="false" private="true" version="true"
+			windowtitle="${project.title} API Documentation"
+			doctitle="&lt;h1&gt;${project.title} Documentation (Version ${project.version})&lt;/h1&gt;"
+			bottom="Copyright &#169; 2006-2007">
+			<classpath refid="compile.classpath" />
+		</javadoc>
+	</target>
+
+	<!--  Build Javadoc documentation with UML -->
+	<target name="test-ydoc">
+		<property name="ps" value="${path.separator}" />
+		<delete dir="${documentdir}" />
+		<mkdir dir="${documentdir}" />
+		<javadoc source="1.5" sourcepath="${sourcedir}" destdir="${documentdir}"
+			packagenames="*" author="false" private="true" version="true"
+			windowtitle="${project.title} API Documentation"
+			doctitle="&lt;h1&gt;${project.title} Documentation (Version ${project.version})&lt;/h1&gt;"
+			bottom="Copyright &#169; 2006-2007">
+			<classpath refid="compile.classpath" />
+			<doclet name="ydoc.doclets.YStandard"
+				path="./lib/ydoc.jar${ps}./lib/class2svg.jar${ps}./resources${ps}./doc">
+				<param name="-author" />
+				<param name="-generic" />
+				<param name="-umlautogen" />
+				<param name="-filterpath" value="./lib/ydoc.jar" />
+				<param name="-filter" value="ydoc.filters.ExcludeFilter" />
+				<param name="-tag" value="y.precondition" />
+				<param name="-tag" value="y.postcondition" />
+				<param name="-tag" value="y.complexity" />
+				<param name="-tag" value="param" />
+				<param name="-tag" value="return" />
+				<param name="-tag" value="see" />
+				<param name="-tag" value="y.uml" />
+			</doclet>
+		</javadoc>
+	</target>
+
+	<!-- Create binary distribution -->
+	<target name="dist" depends="compile" description="Create binary distribution">
+		<mkdir dir="${distpath}" />
+		<jar jarfile="${distpath}/${project.distname}.jar" basedir="${targetdir}" />
+		<copy file="${distpath}/${project.distname}.jar" todir="${distpath}" />
+	</target>
+
+	<!-- Build project and create distribution-->
+<!--	<target name="all" depends="run" />-->
+	<target name="all" depends="dist" />
+
+</project>
