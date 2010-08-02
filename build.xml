@@ -9,7 +9,7 @@
 	<property name="distpath" value="${basedir}/dist" />
 
 	<!-- project settings -->
-	<property name="project.title" value="ThoundsAPI" />
+	<property name="project.title" value="ThoundsAPI Java Client" />
 	<property name="project.distname" value="ThoundsAPI" />
 	<property name="project.version" value="0.3" />
 
@@ -59,9 +59,9 @@
 		<mkdir dir="${documentdir}" />
 		<javadoc sourcepath="${sourcedir}" destdir="${documentdir}"
 			packagenames="*" author="false" private="true" version="true"
-			windowtitle="${project.title} API Documentation"
+			windowtitle="${project.title} Documentation"
 			doctitle="&lt;h1&gt;${project.title} Documentation (Version ${project.version})&lt;/h1&gt;"
-			bottom="Copyright &#169; 2006-2007">
+			bottom="Copyright &#169; 2010">
 			<classpath refid="compile.classpath" />
 		</javadoc>
 	</target>
@@ -73,9 +73,9 @@
 		<mkdir dir="${documentdir}" />
 		<javadoc source="1.5" sourcepath="${sourcedir}" destdir="${documentdir}"
 			packagenames="*" author="false" private="true" version="true"
-			windowtitle="${project.title} API Documentation"
+			windowtitle="${project.title} Documentation"
 			doctitle="&lt;h1&gt;${project.title} Documentation (Version ${project.version})&lt;/h1&gt;"
-			bottom="Copyright &#169; 2006-2007">
+			bottom="Copyright &#169; 2010">
 			<classpath refid="compile.classpath" />
 			<doclet name="ydoc.doclets.YStandard"
 				path="./lib/ydoc.jar${ps}./lib/class2svg.jar${ps}./resources${ps}./doc">
