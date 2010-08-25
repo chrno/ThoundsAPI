@@ -17,12 +17,13 @@ import org.thounds.thoundsapi.connector.ThoundsConnector;
 import org.thounds.thoundsapi.utils.Base64Encoder;
 
 /**
- * This class provide a set of static methods to manage the communication
+ * {@code Thound} class provide a set of static methods to manage the communication
  * between Java applications and Thounds API.
  */
 
 public class Thounds {
-	private static String HOST = "http://stage.thounds.com";
+	public static String HOST = "http://stage.thounds.com";
+	
 	private static String PROFILE_PATH = "/profile";
 	private static String HOME_PATH = "/home";
 	private static String USERS_PATH = "/users";
@@ -39,8 +40,8 @@ public class Thounds {
 	private static int PAGE = 1;
 	private static int PER_PAGE = 1;
 	
-	private static int SUCCESS = 200;
-	private static int CREATED = 201;
+	public static int SUCCESS = 200;
+	public static int CREATED = 201;
 	
 	public static String PRIVATE = "private";
 	public static String CONTACTS = "contacts";

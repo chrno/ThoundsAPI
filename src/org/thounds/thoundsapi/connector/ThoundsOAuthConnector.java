@@ -15,20 +15,21 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.thounds.thoundsapi.Thounds;
 import org.thounds.thoundsapi.ThoundsConnectionException;
 
 /**
- * Classe che consente di comunicare con Thounds usando l'autenticazione tramite OAuth
- *
+ * {@code ThoundsOAuthConnector} let you connect with Thounds API using the OAuth protocol.
  */
+
 public class ThoundsOAuthConnector implements ThoundsConnector {
-	private static String REQUEST_TOKEN_ENDPOINT_URL="http://thounds.com/oauth/request_token";
-	private static String ACCESS_TOKEN_ENDPOINT_URL="http://thounds.com/oauth/access_token";
-	private static String AUTHORIZE_WEBSITE_URL = "http://thounds.com/oauth/authorize";
+	private static String REQUEST_TOKEN_ENDPOINT_URL = Thounds.HOST + "/oauth/request_token";
+	private static String ACCESS_TOKEN_ENDPOINT_URL = Thounds.HOST + "/oauth/access_token";
+	private static String AUTHORIZE_WEBSITE_URL = Thounds.HOST + "/oauth/authorize";
 	
 	private String CONSUMER_KEY = null;
 	private String CONSUMER_SECRET = null;
-	private String CALLBACK_URL=null;
+	private String CALLBACK_URL = null;
 	private boolean isAuthenticated = false;
 	private CommonsHttpOAuthConsumer consumer;
 
@@ -38,11 +39,11 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 	HttpClient httpclient;
 
 	/**
-	 * Costruttore
+	 * Creates a {@code ThoundsOAuthConnector} object.
 	 * 
-	 * @param consumerKey consumer key ottenuto da Thounds
-	 * @param consumerSecret consumer secret key ottenuto da Thounds
-	 * @param callbackUrl callback url dell'applicazione
+	 * @param consumerKey the consumer application key.
+	 * @param consumerSecret the consumer application secret.
+	 * @param callbackUrl the consumer application callback URL.
 	 */
 	public ThoundsOAuthConnector(String consumerKey, String consumerSecret,
 			String callbackUrl) {
@@ -54,13 +55,12 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 	}
 
 	/**
-	 * Metodo per ottenere l'url per autorizzare l'applicazione
+	 * Returns the authorization URL used to get a request token.
 	 * 
-	 * @return url per autorizzare l'applicazione 
-	 * @throws ThoundsConnectionException se si verificano problemi di comunicazione con il server
-	 * @throws ThoundsOAuthParameterExcepion se i parametri di configurazione dai al costruttore sono errati 
+	 * @return the authorization URL. 
+	 * @throws ThoundsConnectionException in case the connection was aborted.
+	 * @throws ThoundsOAuthParameterExcepion in case of bad consumer application key or secret.
 	 */
-	
 	public String getAuthorizeUrl() throws ThoundsConnectionException, ThoundsOAuthParameterExcepion {
 		try {
 			return provider.retrieveRequestToken(consumer, CALLBACK_URL);
@@ -76,11 +76,11 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 	}
 
 	/**
-	 * Metodo per ottenere i token di accesso da Thounds
+	 * Returns an access token to the service provider.
 	 * 
-	 * @param verifier codice di verifica ricevuto tramite callback da Thounds
-	 * @throws ThoundsConnectionException se si verificano problemi di comunicazione con il server
-	 * @throws ThoundsOAuthParameterExcepion se il parametro verifier è errato
+	 * @param verifier the verifier code returned by the authorization process.
+	 * @throws ThoundsConnectionException in case the connection was aborted.
+	 * @throws ThoundsOAuthParameterExcepion in case of bad OAuth request parameters.
 	 */
 	// verifier parametro oauth_verifier della query
 	public void retrieveAccessToken(String verifier) throws ThoundsOAuthParameterExcepion, ThoundsConnectionException {
@@ -99,10 +99,10 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 	}
 	
 	/**
-	 * Metodo per impostare i token di accesso
+	 * Sets access token and secret.
 	 * 
-	 * @param token access token ottenuto da Thounds
-	 * @param tokenSecret access token secret ottenuto da Thounds
+	 * @param token the access token.
+	 * @param tokenSecret the access token secret.
 	 */
 	public void setAccessToken(String token, String tokenSecret){
 		consumer.setTokenWithSecret(token, tokenSecret);
@@ -110,12 +110,11 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 	}
 	
 	/**
-	 * Metodo di logout che cancella i token di accesso ottenuti da Thounds 
+	 * Unsets access token and secret. 
 	 */
 	public void logout() {
 		isAuthenticated = false;
 		consumer.setTokenWithSecret(null, null);
-		
 	}
 
 	@Override
@@ -160,7 +159,7 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 
 	@Override
 	public boolean isAuthenticated() {
-		StringBuilder uriBuilder = new StringBuilder("http://thounds.com/profile");
+		StringBuilder uriBuilder = new StringBuilder(Thounds.HOST + "/profile");
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
 		httpget.addHeader("Accept", "application/json");
 		HttpResponse response;
@@ -173,16 +172,18 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 	}
 
 	/**
-	 * Metodo per ottenere l'access token
-	 * @return access token
+	 * Returns the access token.
+	 * 
+	 * @return the access token.
 	 */
 	public String getToken(){
 		return consumer.getToken();
 	}
 	
 	/**
-	 * Metodo per ottenere l'access token secret
-	 * @return access token secret
+	 * Returns the access token secret.
+	 * 
+	 * @return the access token secret.
 	 */
 	public String getTokenSecret(){
 		return consumer.getTokenSecret();

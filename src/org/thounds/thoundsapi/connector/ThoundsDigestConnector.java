@@ -10,13 +10,14 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpProtocolParams;
+import org.thounds.thoundsapi.Thounds;
 import org.thounds.thoundsapi.ThoundsConnectionException;
 import org.thounds.thoundsapi.ThoundsNotAuthenticatedexception;
 
 /**
- * Classe che consente di comunicare con Thounds usando l'autenticazione tramite digest
- * 
+ * {@code ThoundsDigestConnector} let you connect with Thounds API using the HTTP Digest authentication protocol.
  */
+
 public class ThoundsDigestConnector implements ThoundsConnector {
 
 	private String USERNAME = "";
@@ -25,13 +26,12 @@ public class ThoundsDigestConnector implements ThoundsConnector {
 	private DefaultHttpClient httpclient = new DefaultHttpClient();
 
 	/**
-	 * Metodo di login con il quale si settano le credenziali che poi il connettore
-	 * userà per comunicare con Thounds
+	 * Sets user authentication credentials.
 	 * 
-	 * @param username username dell'utente
-	 * @param password password dell'utente
-	 * @return {@code true} se le credenziali fornite sono corrette, {@code false} altrimenti
-	 * @throws ThoundsConnectionException eccezione sollevata nel caso si verifichino errori di connessione
+	 * @param username the username.
+	 * @param password the password.
+	 * @return {@code true} if authentication credentials are correct, {@code false} otherwise.
+	 * @throws ThoundsConnectionException in case the connection was aborted.
 	 */
 	public boolean login(String username, String password)
 			throws ThoundsConnectionException {
@@ -39,14 +39,13 @@ public class ThoundsDigestConnector implements ThoundsConnector {
 		USERNAME = username;
 		PASSWORD = password;
 
-		StringBuilder uriBuilder = new StringBuilder(
-				"http://thounds.com/profile");
+		StringBuilder uriBuilder = new StringBuilder(Thounds.HOST + "/profile");
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
 		httpget.addHeader("Accept", "application/json");
 		
 		try {
 			HttpResponse response = executeAuthenticatedHttpRequest(httpget);
-			isAuthenticated = response.getStatusLine().getStatusCode() == 200;
+			isAuthenticated = response.getStatusLine().getStatusCode() == Thounds.SUCCESS;
 		} catch (ThoundsNotAuthenticatedexception e) {
 			isAuthenticated = false;
 		}
@@ -55,7 +54,7 @@ public class ThoundsDigestConnector implements ThoundsConnector {
 	}
 
 	/**
-	 * Metodo che cancella le credenziali di accesso impostate tramite il metodo di login.
+	 * Unsets user authentication credentials.
 	 */
 	public void logout() {
 		USERNAME = "";
