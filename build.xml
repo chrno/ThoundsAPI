@@ -46,12 +46,12 @@
 		</javac>
 	</target>
 
-<!--	<target name="run" depends="compile">-->
-<!--		<java fork="true" classname="org.potomak.Main" classpathref="compile.classpath">-->
-<!--			<classpath path="${targetdir}" />-->
-<!--			<arg value="${action}" />-->
-<!--		</java>-->
-<!--	</target>-->
+	<target name="run" depends="dist">
+		<java fork="true" classname="org.thounds.thoundsapi.test.ThoundsTest" classpathref="compile.classpath">
+			<classpath path="${targetdir}" />
+			<arg value="${action}" />
+		</java>
+	</target>
 
 	<!--  Build Javadoc documentation -->
 	<target name="javadoc" description="Generate JavaDoc API docs">
@@ -103,7 +103,6 @@
 	</target>
 
 	<!-- Build project and create distribution-->
-<!--	<target name="all" depends="run" />-->
-	<target name="all" depends="dist" />
+	<target name="all" depends="run" />
 
 </project>
