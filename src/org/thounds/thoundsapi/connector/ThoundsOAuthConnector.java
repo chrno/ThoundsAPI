@@ -3,7 +3,7 @@ package org.thounds.thoundsapi.connector;
 import java.io.IOException;
 
 import oauth.signpost.OAuthProvider;
-import oauth.signpost.basic.DefaultOAuthProvider;
+import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
@@ -27,30 +27,28 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 	private static String ACCESS_TOKEN_ENDPOINT_URL = Thounds.HOST + "/oauth/access_token";
 	private static String AUTHORIZE_WEBSITE_URL = Thounds.HOST + "/oauth/authorize";
 	
-	private String CONSUMER_KEY = null;
-	private String CONSUMER_SECRET = null;
-	private String CALLBACK_URL = null;
+	private String consumerKey = null;
+	private String consumerSecret = null;
+	private String callbackUrl = null;
 	private boolean isAuthenticated = false;
 	private CommonsHttpOAuthConsumer consumer;
 
-	private OAuthProvider provider = new DefaultOAuthProvider(
-			REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL,
-			AUTHORIZE_WEBSITE_URL);
+	private OAuthProvider provider = new CommonsHttpOAuthProvider(
+			REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL, AUTHORIZE_WEBSITE_URL);
 	HttpClient httpclient;
 
 	/**
-	 * Creates a {@code ThoundsOAuthConnector} object.
+	 * Creates a {@link ThoundsOAuthConnector} object.
 	 * 
 	 * @param consumerKey the consumer application key.
 	 * @param consumerSecret the consumer application secret.
 	 * @param callbackUrl the consumer application callback URL.
 	 */
-	public ThoundsOAuthConnector(String consumerKey, String consumerSecret,
-			String callbackUrl) {
-		CONSUMER_KEY = consumerKey;
-		CONSUMER_SECRET = consumerSecret;
-		consumer = new CommonsHttpOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
-		CALLBACK_URL = callbackUrl;
+	public ThoundsOAuthConnector(String consumerKey, String consumerSecret, String callbackUrl) {
+		this.consumerKey = consumerKey;
+		this.consumerSecret = consumerSecret;
+		consumer = new CommonsHttpOAuthConsumer(this.consumerKey, this.consumerSecret);
+		this.callbackUrl = callbackUrl;
 		httpclient = new DefaultHttpClient();
 	}
 
@@ -63,7 +61,7 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 	 */
 	public String getAuthorizeUrl() throws ThoundsConnectionException, ThoundsOAuthParameterExcepion {
 		try {
-			return provider.retrieveRequestToken(consumer, CALLBACK_URL);
+			return provider.retrieveRequestToken(consumer, callbackUrl);
 		} catch (OAuthMessageSignerException e) {
 			throw new ThoundsOAuthParameterExcepion();
 		} catch (OAuthNotAuthorizedException e) {
@@ -74,17 +72,21 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 			throw new ThoundsConnectionException();
 		}
 	}
-
+	
 	/**
 	 * Returns an access token to the service provider.
 	 * 
 	 * @param verifier the verifier code returned by the authorization process.
+	 * @param token request token.
+	 * @param tokenSecret request token secret.
 	 * @throws ThoundsConnectionException in case the connection was aborted.
 	 * @throws ThoundsOAuthParameterExcepion in case of bad OAuth request parameters.
 	 */
 	// verifier parametro oauth_verifier della query
-	public void retrieveAccessToken(String verifier) throws ThoundsOAuthParameterExcepion, ThoundsConnectionException {
+	public void retrieveAccessToken(String verifier, String token, String tokenSecret)
+	throws ThoundsOAuthParameterExcepion, ThoundsConnectionException {
 		try {
+			consumer.setTokenWithSecret(token, tokenSecret);
 			provider.retrieveAccessToken(consumer, verifier);
 		} catch (OAuthMessageSignerException e) {
 			throw new ThoundsOAuthParameterExcepion();
@@ -96,6 +98,18 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 			throw new ThoundsConnectionException();
 		}
 		isAuthenticated = true;
+	}
+
+	/**
+	 * Returns an access token to the service provider.
+	 * 
+	 * @param verifier the verifier code returned by the authorization process.
+	 * @throws ThoundsConnectionException in case the connection was aborted.
+	 * @throws ThoundsOAuthParameterExcepion in case of bad OAuth request parameters.
+	 */
+	// verifier parametro oauth_verifier della query
+	public void retrieveAccessToken(String verifier) throws ThoundsOAuthParameterExcepion, ThoundsConnectionException {
+		retrieveAccessToken(verifier, consumer.getToken(), consumer.getTokenSecret());
 	}
 	
 	/**
@@ -165,7 +179,7 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 		HttpResponse response;
 		try {
 			response = executeAuthenticatedHttpRequest(httpget);
-			return response.getStatusLine().getStatusCode()==200;
+			return response.getStatusLine().getStatusCode() == Thounds.SUCCESS;
 		} catch (ThoundsConnectionException e) {
 			return false;
 		}
@@ -176,7 +190,7 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 	 * 
 	 * @return the access token.
 	 */
-	public String getToken(){
+	public String getToken() {
 		return consumer.getToken();
 	}
 	
@@ -185,7 +199,7 @@ public class ThoundsOAuthConnector implements ThoundsConnector {
 	 * 
 	 * @return the access token secret.
 	 */
-	public String getTokenSecret(){
+	public String getTokenSecret() {
 		return consumer.getTokenSecret();
 	}
 }

@@ -20,10 +20,22 @@ import org.thounds.thoundsapi.ThoundsNotAuthenticatedexception;
 
 public class ThoundsDigestConnector implements ThoundsConnector {
 
-	private String USERNAME = "";
-	private String PASSWORD = "";
+	private String username = "";
+	private String password = "";
 	private boolean isAuthenticated = false;
 	private DefaultHttpClient httpclient = new DefaultHttpClient();
+	
+	/**
+	 * Creates a {@link ThoundsDigestConnector} object. 
+	 * 
+	 * @param username the username.
+	 * @param password the password.
+	 */
+	public ThoundsDigestConnector(String username, String password) {
+		super();
+		this.username = username;
+		this.password = password;
+	}
 
 	/**
 	 * Sets user authentication credentials.
@@ -36,8 +48,8 @@ public class ThoundsDigestConnector implements ThoundsConnector {
 	public boolean login(String username, String password)
 			throws ThoundsConnectionException {
 
-		USERNAME = username;
-		PASSWORD = password;
+		this.username = username;
+		this.password = password;
 
 		StringBuilder uriBuilder = new StringBuilder(Thounds.HOST + "/profile");
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
@@ -57,8 +69,8 @@ public class ThoundsDigestConnector implements ThoundsConnector {
 	 * Unsets user authentication credentials.
 	 */
 	public void logout() {
-		USERNAME = "";
-		PASSWORD = "";
+		username = "";
+		password = "";
 		isAuthenticated = false;
 	}
 
@@ -73,7 +85,7 @@ public class ThoundsDigestConnector implements ThoundsConnector {
 					false);
 			httpclient.getCredentialsProvider().setCredentials(
 					new AuthScope(null, 80, "thounds", "Digest"),
-					new UsernamePasswordCredentials(USERNAME, PASSWORD));
+					new UsernamePasswordCredentials(username, password));
 			
 			synchronized (httpclient) {
 				responce = httpclient.execute(request);
