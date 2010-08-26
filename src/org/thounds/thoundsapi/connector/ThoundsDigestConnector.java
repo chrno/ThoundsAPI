@@ -46,11 +46,7 @@ public class ThoundsDigestConnector implements ThoundsConnector {
 	 * @throws ThoundsConnectionException in case the connection was aborted.
 	 */
 	public boolean login(String username, String password)
-			throws ThoundsConnectionException {
-
-		this.username = username;
-		this.password = password;
-
+	throws ThoundsConnectionException {
 		StringBuilder uriBuilder = new StringBuilder(Thounds.HOST + "/profile");
 		HttpGet httpget = new HttpGet(uriBuilder.toString());
 		httpget.addHeader("Accept", "application/json");
@@ -76,7 +72,7 @@ public class ThoundsDigestConnector implements ThoundsConnector {
 
 	@Override
 	public HttpResponse executeAuthenticatedHttpRequest(HttpUriRequest request)
-			throws ThoundsConnectionException, ThoundsNotAuthenticatedexception {
+	throws ThoundsConnectionException, ThoundsNotAuthenticatedexception {
 
 		HttpResponse responce = null;
 		try {
@@ -103,18 +99,17 @@ public class ThoundsDigestConnector implements ThoundsConnector {
 
 	@Override
 	public HttpResponse executeHttpRequest(HttpUriRequest request)
-			throws ThoundsConnectionException {
-		HttpResponse responce = null;
+	throws ThoundsConnectionException {
+		HttpResponse response = null;
 		try {
-			HttpProtocolParams.setUseExpectContinue(httpclient.getParams(),
-					false);
+			HttpProtocolParams.setUseExpectContinue(httpclient.getParams(), false);
 			synchronized (httpclient) {
-				responce = httpclient.execute(request);
+				response = httpclient.execute(request);
 			}
 		} catch (IOException e) {
 			throw new ThoundsConnectionException();
 		}
-		return responce;
+		return response;
 	}
 
 	@Override
