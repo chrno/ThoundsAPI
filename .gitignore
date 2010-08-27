@@ -1,3 +1,6 @@
+.classpath
+.externalToolBuilders
+.project
 bin
 doc
 dist
