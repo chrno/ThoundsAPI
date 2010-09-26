@@ -639,6 +639,8 @@ public class Thounds {
 	 * 				longitude in degrees.
 	 * @param thoundPath
 	 * 				thound's file path.
+	 * @param format
+	 * 				thound's file format (example: {@code "3gp"}).
 	 * @param coverPath
 	 * 				thound's cover file path. 
 	 * @return {@code true} if request ends successfully, {@code false} otherwise.
@@ -649,7 +651,7 @@ public class Thounds {
 	 */
 	public static boolean createThound(String title, String tags, int delay,
 			int offset, int duration, String privacy, Integer bpm, Double lat,
-			Double lng, String thoundPath, String coverPath)
+			Double lng, String thoundPath, String format, String coverPath)
 	throws ThoundsConnectionException, ThoundsNotAuthenticatedexception {
 
 		JSONObject thoundJSON = new JSONObject();
@@ -678,6 +680,7 @@ public class Thounds {
 				System.out.println("encodedthound: " + encodedThound);
 				trackFieldJSON.put("thoundfile", encodedThound);
 			}
+			trackFieldJSON.put("format", format);
 			if (coverPath != null && !coverPath.equals("")){
 				encodedCover = Base64Encoder.Encode(coverPath);
 				trackFieldJSON.put("coverfile", encodedCover);
