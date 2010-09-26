@@ -35,7 +35,7 @@ public class ThoundsTest {
 	
 	private static void testDigestConnector()
 	throws IllegalThoundsObjectException, ThoundsConnectionException, ThoundsNotAuthenticatedexception, IOException {
-		String username = readLine("Enter your username:");
+		String username = readLine("Enter your email:");
 		String password = readLine("Enter your password:");
         
 		ThoundsDigestConnector con = new ThoundsDigestConnector(username , password);

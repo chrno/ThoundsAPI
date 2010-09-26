@@ -43,6 +43,14 @@ public class UserWrapper implements ThoundsObjectInterface{
 	public String getSiteUrl() {
 		return profile.optString("site_url", "");
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String getBlogUrl() {
+		return profile.optString("blog_url", "");
+	}
 
 	/**
 	 * 

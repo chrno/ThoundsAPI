@@ -22,7 +22,9 @@ import org.thounds.thoundsapi.utils.Base64Encoder;
  */
 
 public class Thounds {
-	public static String HOST = "http://stage.thounds.com";
+	// DEBUG HOST
+	//public static String HOST = "http://stage.thounds.com";
+	public static String HOST = "http://thounds.com";
 	
 	private static String PROFILE_PATH = "/profile";
 	private static String HOME_PATH = "/home";

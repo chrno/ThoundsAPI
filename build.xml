@@ -11,7 +11,7 @@
 	<!-- project settings -->
 	<property name="project.title" value="ThoundsAPI Java Client" />
 	<property name="project.distname" value="ThoundsAPI" />
-	<property name="project.version" value="0.3" />
+	<property name="project.version" value="0.3.1" />
 
 	<!-- classpath -->
 	<path id="compile.classpath">
@@ -98,8 +98,8 @@
 	<!-- Create binary distribution -->
 	<target name="dist" depends="compile" description="Create binary distribution">
 		<mkdir dir="${distpath}" />
-		<jar jarfile="${distpath}/${project.distname}.jar" basedir="${targetdir}" />
-		<copy file="${distpath}/${project.distname}.jar" todir="${distpath}" />
+		<jar jarfile="${distpath}/${project.distname}_${project.version}.jar" basedir="${targetdir}" />
+		<!--<copy file="${distpath}/${project.distname}.jar" todir="${distpath}" />-->
 	</target>
 
 	<!-- Build project and create distribution-->
