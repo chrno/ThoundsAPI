@@ -40,7 +40,7 @@ public class Thounds {
 	private static ThoundsConnector connector = null;
 	
 	private static int PAGE = 1;
-	private static int PER_PAGE = 1;
+	private static int PER_PAGE = 20;
 	
 	public static int SUCCESS = 200;
 	public static int CREATED = 201;

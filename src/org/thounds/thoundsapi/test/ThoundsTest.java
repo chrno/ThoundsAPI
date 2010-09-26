@@ -21,6 +21,8 @@ public class ThoundsTest {
 		System.out.println("== Digest connector ==");
 		testDigestConnector();
 		
+		System.out.println("User library: " + Thounds.loadUserLibrary().getThoundsList().length);
+		
 		System.out.println("== OAuth connector ==");
 		String token = "nWehRhPnIF75g3nTr9G2";
 		String tokenSecret = "QjC5jayh5Bz5gWdZnT5WpKu1QThzin842d9p6nF7";
@@ -39,8 +41,9 @@ public class ThoundsTest {
 		String password = readLine("Enter your password:");
         
 		ThoundsDigestConnector con = new ThoundsDigestConnector(username , password);
+		Thounds.setConnector(con);
 		
-		connectedAs(con);
+		//connectedAs(con);
 	}
 	
 	private static void testOauthConnector(String token, String tokenSecret, String callback)
@@ -84,9 +87,12 @@ public class ThoundsTest {
 	
 	private static void connectedAs(ThoundsConnector con)
 	throws IllegalThoundsObjectException, ThoundsConnectionException, ThoundsNotAuthenticatedexception {
-		Thounds.setConnector(con);
-		
-		System.out.println("You're logged in as " + Thounds.loadHome().getUser().getName());
+		if (Thounds.getConnector() instanceof ThoundsDigestConnector) {
+			System.out.println("login('user', 'pass') method returns: " + ((ThoundsDigestConnector)Thounds.getConnector()).login("user", "pass"));
+		}
+		else {
+			System.out.println("You're logged in as " + Thounds.loadHome().getUser().getName());
+		}
 	}
 	
 	private static String readLine(String prompt) throws IOException {
