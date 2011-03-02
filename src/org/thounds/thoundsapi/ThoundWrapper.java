@@ -172,4 +172,12 @@ public class ThoundWrapper implements ThoundsObjectInterface{
 	public String getCreatedAt(){
 		return thound.optString("created_at");
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String getUpdatedAt(){
+		return thound.optString("updated_at");
+	}
 }

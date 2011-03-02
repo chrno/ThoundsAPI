@@ -11,7 +11,7 @@
 	<!-- project settings -->
 	<property name="project.title" value="ThoundsAPI Java Client" />
 	<property name="project.distname" value="ThoundsAPI" />
-	<property name="project.version" value="0.3.1" />
+	<property name="project.version" value="0.3.2" />
 
 	<!-- classpath -->
 	<path id="compile.classpath">
